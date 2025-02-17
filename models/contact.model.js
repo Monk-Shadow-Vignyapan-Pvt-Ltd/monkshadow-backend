@@ -13,6 +13,7 @@ const contactSchema = new mongoose.Schema(
     },
     message: { type: String, required: false, trim: true },
     companyName: { type: String, required: false, trim: true },
+    websiteUrl: { type: String, required: false, trim: true },
     pageName: { type: String, required: false, trim: true },
     isContactClose: { type: Boolean, required: true },
   },
