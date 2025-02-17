@@ -6,9 +6,9 @@ export const addContact = async (req, res) => {
     const region = req.baseUrl.includes("/canada") ? "canada" : "india";
     const Contact = getContactModel(region);
 
-    const { name, phone, email, message, isContactClose } = req.body;
+    const { name, phone, email, message,companyName,pageName, isContactClose } = req.body;
 
-    if (!name || !phone || !email || !message) {
+    if (!name || !phone || !email ) {
       return res.status(400).json({ message: "Please provide all required fields", success: false });
     }
 
@@ -20,13 +20,15 @@ export const addContact = async (req, res) => {
       existingContact.phone = phone;
       existingContact.email = email;
       existingContact.message = message;
+      existingContact.companyName = companyName;
+      existingContact.pageName = pageName;
       existingContact.isContactClose = isContactClose;
       await existingContact.save();
       return res.status(200).json({ message: "Contact updated successfully", contact: existingContact, success: true });
     }
 
     // Create a new contact document
-    const newContact = new Contact({ name, phone, email, message, isContactClose });
+    const newContact = new Contact({ name, phone, email, message,companyName,pageName, isContactClose });
     await newContact.save();
 
     res.status(201).json({ message: "Contact added successfully", contact: newContact, success: true });
@@ -61,9 +63,9 @@ export const updateContact = async (req, res) => {
     const Contact = getContactModel(region);
 
     const { id } = req.params;
-    const { name, phone, email, message, isContactClose } = req.body;
+    const { name, phone, email, message,companyName,pageName, isContactClose } = req.body;
 
-    const updatedData = { name, phone, email, message, isContactClose };
+    const updatedData = { name, phone, email, message,companyName,pageName, isContactClose };
 
     const contact = await Contact.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
 

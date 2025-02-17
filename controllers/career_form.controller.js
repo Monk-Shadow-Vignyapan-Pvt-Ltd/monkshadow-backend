@@ -38,6 +38,24 @@ export const addCareerForm = async (req, res) => {
 
         const processedResume = await processResume(resume);
 
+         // Check if contact exists in the selected region
+    const existingCareerForm = await CareerForm.findOne({ $or: [{ email }, { phone }] });
+
+    if (existingCareerForm) {
+        existingCareerForm.name = name;
+        existingCareerForm.phone = phone;
+        existingCareerForm.email = email;
+        existingCareerForm.resume = processedResume;
+        existingCareerForm.city = city;
+        existingCareerForm.readytoRelocate = readytoRelocate;
+        existingCareerForm.allowYoutoContact = allowYoutoContact;
+        existingCareerForm.isContactClose = isContactClose;
+        existingCareerForm.careerId = careerId;
+        existingCareerForm.isCareerClose = isCareerClose;
+      await existingCareerForm.save();
+      return res.status(200).json({ message: "Career form updated successfully", careerForm: existingCareerForm, success: true });
+    }
+
         // Create and save the career form details in MongoDB
         const careerForm = new CareerForm({
             name,

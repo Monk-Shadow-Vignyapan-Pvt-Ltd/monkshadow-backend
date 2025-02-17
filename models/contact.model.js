@@ -11,7 +11,9 @@ const contactSchema = new mongoose.Schema(
       trim: true,
       match: [/\S+@\S+\.\S+/, "Please enter a valid email address"],
     },
-    message: { type: String, required: true, trim: true },
+    message: { type: String, required: false, trim: true },
+    companyName: { type: String, required: false, trim: true },
+    pageName: { type: String, required: false, trim: true },
     isContactClose: { type: Boolean, required: true },
   },
   { timestamps: true }

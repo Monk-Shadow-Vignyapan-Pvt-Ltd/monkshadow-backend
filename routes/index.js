@@ -6,6 +6,7 @@ import statusRoute from "./status.route.js";
 import careerRoute from "./career.route.js";
 import careerFormRoute from "./career_form.route.js";
 import careerFollowupRoute from "./career_followup.route.js";
+import seoFormRoute from "./seo_form.route.js";
 
 const routes = {
   authRoute,
@@ -14,7 +15,8 @@ const routes = {
   statusRoute,
   careerRoute,
   careerFormRoute,
-  careerFollowupRoute
+  careerFollowupRoute,
+  seoFormRoute
 };
 
 export default routes;
