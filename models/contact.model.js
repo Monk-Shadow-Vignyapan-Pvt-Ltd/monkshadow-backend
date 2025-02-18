@@ -16,6 +16,7 @@ const contactSchema = new mongoose.Schema(
     websiteUrl: { type: String, required: false, trim: true },
     pageName: { type: String, required: false, trim: true },
     isContactClose: { type: Boolean, required: true },
+    showForAll: { type: Boolean, required: true },
   },
   { timestamps: true }
 );
