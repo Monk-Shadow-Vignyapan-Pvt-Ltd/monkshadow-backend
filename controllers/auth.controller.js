@@ -171,7 +171,7 @@ export const updateUser = async (req, res) => {
         const { email, password, username, avatar ,country} = req.body;
 
         // Validate base64 image data if provided
-        if (!email || !password || !username || !role) {
+        if (!email || !password || !username ) {
             return res.status(400).json({ msg: "Please enter all the fields" });
           }
           if (password.length < 6) {
