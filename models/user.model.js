@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  country: {
+    default: "India",
+    type: String,
+    trim: true,
+  },
   avatar: {
     type: String,
     required:false

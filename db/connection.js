@@ -30,7 +30,7 @@ const connectDB = async () => {
                 email: defaultAdminEmail,
                 password: hashedPassword, // Store hashed password
                 username: "admin",
-                
+                country: "India"
             });
 
             await defaultUser.save();
