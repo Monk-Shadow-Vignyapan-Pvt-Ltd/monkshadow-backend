@@ -1,4 +1,5 @@
 import getCareerFormModel from '../models/career_form.model.js';
+import getCareerModel from "../models/career.model.js";
 import sharp from 'sharp';
 
 const processResume = async (resume) => {
@@ -79,15 +80,49 @@ export const addCareerForm = async (req, res) => {
 };
 
 // Get all career form entries
+// export const getCareerForms = async (req, res) => {
+//     try {
+//         const region = req.baseUrl.includes("/canada") ? "canada" : "india";
+//         const CareerForm = getCareerFormModel(region);
+//         const careerForms = await CareerForm.find();
+//         if (!careerForms) return res.status(404).json({ message: "No career forms found", success: false });
+//         return res.status(200).json({ careerForms, success: true });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: 'Failed to fetch career forms', success: false });
+//     }
+// };
+
 export const getCareerForms = async (req, res) => {
     try {
         const region = req.baseUrl.includes("/canada") ? "canada" : "india";
         const CareerForm = getCareerFormModel(region);
         const careerForms = await CareerForm.find();
-        if (!careerForms) return res.status(404).json({ message: "No career forms found", success: false });
-        return res.status(200).json({ careerForms, success: true });
+        if (!careerForms) {
+          return res.status(404).json({ message: "No career forms found", success: false });
+        }
+        const reversedCareerForms = careerForms.reverse();
+        const page = parseInt(req.query.page) || 1;
+
+        // Define the number of items per page
+        const limit = 12;
+
+        // Calculate the start and end indices for pagination
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        // Paginate the reversed movies array
+        const paginatedCareerForms = reversedCareerForms.slice(startIndex, endIndex);
+        return res.status(200).json({ 
+            careerForms:paginatedCareerForms, 
+            success: true ,
+            pagination: {
+            currentPage: page,
+            totalPages: Math.ceil(careerForms.length / limit),
+            totalusers: careerForms.length,
+        },});
     } catch (error) {
-        console.log(error);
+        console.error('Error fetching career forms:', error);
         res.status(500).json({ message: 'Failed to fetch career forms', success: false });
     }
 };
@@ -143,3 +178,62 @@ export const deleteCareerForm = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete career form', success: false });
     }
 };
+
+export const searchCareerForms = async (req, res) => {
+    try {
+        const region = req.baseUrl.includes("/canada") ? "canada" : "india";
+        const CareerForm = getCareerFormModel(region);
+        const Career = getCareerModel(region);
+        const { search } = req.query;
+
+        if (!search) {
+            return res.status(400).json({ message: 'Search query is required', success: false });
+        }
+
+        const regex = new RegExp(search, 'i'); // Case-insensitive search
+
+        // Fetch CareerForms
+        const careerForms = await CareerForm.find({
+            $or: [
+                { name: regex },
+                { phone: regex },
+                { email: regex },
+                { city: regex }
+            ]
+        });
+
+        // Fetch Careers
+        const careers = await Career.find({
+            $or: [
+                { position: regex },
+                { experience: regex },
+                { jobType: regex },
+                { city: regex },
+                { shortDescription: regex },
+                { jobDescription: regex },
+                { applicationDeadline: regex },
+            ]
+        });
+
+        // Merge both results
+        const mergedResults = [...careerForms, ...careers];
+
+        if (mergedResults.length === 0) {
+            return res.status(404).json({ message: 'No matching results found', success: false });
+        }
+
+        return res.status(200).json({
+            careerForms: mergedResults,
+            success: true,
+            pagination: {
+                currentPage: 1,
+                totalPages: Math.ceil(mergedResults.length / 12),
+                totalResults: mergedResults.length,
+            },
+        });
+    } catch (error) {
+        console.error('Error searching CareerForms and Careers:', error);
+        res.status(500).json({ message: 'Failed to search CareerForms and Careers', success: false });
+    }
+};
+
