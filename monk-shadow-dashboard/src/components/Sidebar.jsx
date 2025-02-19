@@ -85,6 +85,8 @@ const Sidebar = (props) => {
 
                             <MenuComponent to={'/career-forms'} name={"Career Forms"} icon={<MenuSectionIcon />} isActive={false} />
 
+                            <MenuComponent to={'/package'} name={"Package Maker"} icon={<MenuSectionIcon />} isActive={false} />
+
 
 
                             </div>

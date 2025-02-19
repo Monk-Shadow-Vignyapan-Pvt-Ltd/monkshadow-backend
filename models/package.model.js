@@ -8,7 +8,7 @@ const packageSchema = new mongoose.Schema(
     noOfPages: { type: String, required: false },
     domesticPrice: { type: Number, required: false },
     duration: { type: String, required: false },
-    lockingPeriod: { type: String, required: false },
+    lockingPeriod: { type: Number, required: false },
     internationalPrice: { type: Number, required: false },
     note: { type: String, required: true, trim: true },
   },

@@ -12,7 +12,7 @@ import { singleUpload } from "../middleware/multer.js";
 const router = express.Router();
 
 router.route("/addPackage_").post(addPackage_);
-router.route("/getPackagess").get(getPackages);
+router.route("/getPackages").get(getPackages);
 router.route("/updatePackage/:id").post(updatePackage);
 router.route("/deletePackage/:id").delete(deletePackage);
 router.route("/searchPackages").post(searchPackages);

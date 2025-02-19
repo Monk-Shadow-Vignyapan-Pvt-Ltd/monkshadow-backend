@@ -11,12 +11,12 @@ import Datatable from './pages/Datatable'
 import Login from './pages/Login'
 import Users from './pages/Users'
 import Billing from './pages/Billing'
-import ContactFollowUp from './pages/ContactFollowUp'
 
 import { RolesProvider } from './RolesContext';
 import Career from './pages/Career';
 import CareerForms from './pages/CareerForms';
-import CareerFollowUp from './pages/CareerFollowUp';
+import Package from './pages/package';
+
 
 function App() {
 
@@ -33,6 +33,7 @@ function App() {
       children: [
         { index: true, element: <Home /> },
         { path: 'users', element: <Users /> },
+        { path: 'package', element: <Package /> },
         { path: 'contacts', element: <Home /> },
         { path: 'career', element:<Career />},
         { path: 'career-forms', element:<CareerForms />},

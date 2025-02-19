@@ -8,7 +8,7 @@ export const addPackage_ = async (req, res) => {
 
     const { packageName, services, noOfPages, message,domesticPrice, duration, lockingPeriod,internationalPrice,note, isPackageClose,showForAll,followups } = req.body;
 
-    if (!packageName || !services || !noOfPages ) {
+    if (!packageName || !services ) {
       return res.status(400).json({ message: "Please provide all required fields", success: false });
     }
 

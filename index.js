@@ -37,6 +37,7 @@ app.use("/api/v1/statuses", routes.statusRoute);
 app.use("/api/v1/canada/contacts", routes.contactRoute);
 app.use("/api/v1/canada/careers", routes.careerRoute);
 app.use("/api/v1/canada/careerForms", routes.careerFormRoute);
+app.use("/api/v1/canada/service", routes.serviceRoute);
 app.use("/api/v1/canada/packages", routes.packageRoute);
 
 app.use("/api/v1/india/contacts", routes.contactRoute);
