@@ -1,18 +1,18 @@
 import express from "express";
 import {
-  addPackage,
-  getPackage,
+  addPackage_,
+  getPackages,
   updatePackage,
   deletePackage,
   searchPackages,
-} from "../controllers/contact.controller.js";
+} from "../controllers/package.controller.js";
 import isAuthenticated from "../auth/isAuthenticated.js";
 import { singleUpload } from "../middleware/multer.js";
 
 const router = express.Router();
 
-router.route("/addPackage").post(addPackage);
-router.route("/getPackages").get(getPackage);
+router.route("/addPackage_").post(addPackage_);
+router.route("/getPackagess").get(getPackages);
 router.route("/updatePackage/:id").post(updatePackage);
 router.route("/deletePackage/:id").delete(deletePackage);
 router.route("/searchPackages").post(searchPackages);

@@ -1,7 +1,7 @@
-import getPackageModel from "../models/package.model";
+import getPackageModel from "../models/package.model.js";
 
 // Add a new package
-export const addPackage = async (req, res) => {
+export const addPackage_ = async (req, res) => {
   try {
     const region = req.baseUrl.includes("/canada") ? "canada" : "india";
     const Package = getPackageModel(region);

@@ -4,6 +4,7 @@ import contactRoute from "./contact.route.js";
 import statusRoute from "./status.route.js";
 import careerRoute from "./career.route.js";
 import careerFormRoute from "./career_form.route.js";
+import packageRoute from "./package.route.js";
 
 const routes = {
   authRoute,
@@ -11,6 +12,7 @@ const routes = {
   statusRoute,
   careerRoute,
   careerFormRoute,
+  packageRoute
 };
 
 export default routes;
