@@ -30,7 +30,7 @@ export const addCareerForm = async (req, res) => {
     try {
         const region = req.baseUrl.includes("/canada") ? "canada" : "india";
         const CareerForm = getCareerFormModel(region);
-        const { name, phone, email, resume, city, readytoRelocate, allowYoutoContact, careerId,isCareerClose, status,followupMessage} = req.body;
+        const { name, phone, email, resume, city, readytoRelocate, allowYoutoContact, careerId,isCareerClose, followups} = req.body;
 
         if (!resume) {
             return res.status(400).json({ message: 'Resume is required', success: false });
@@ -52,8 +52,7 @@ export const addCareerForm = async (req, res) => {
         existingCareerForm.isContactClose = isContactClose;
         existingCareerForm.careerId = careerId;
         existingCareerForm.isCareerClose = isCareerClose;
-        existingCareerForm.status = status;
-        existingCareerForm.followupMessage = followupMessage;
+        existingCareerForm.followups = followups;
       await existingCareerForm.save();
       return res.status(200).json({ message: "Career form updated successfully", careerForm: existingCareerForm, success: true });
     }
@@ -68,7 +67,7 @@ export const addCareerForm = async (req, res) => {
             readytoRelocate,
             allowYoutoContact,
             careerId,
-            isCareerClose,status,followupMessage 
+            isCareerClose,followups 
         });
 
         await careerForm.save();
@@ -113,9 +112,9 @@ export const updateCareerForm = async (req, res) => {
         const region = req.baseUrl.includes("/canada") ? "canada" : "india";
         const CareerForm = getCareerFormModel(region);
         const { id } = req.params;
-        const { name, phone, email, resume, city, readytoRelocate, allowYoutoContact, careerId,isCareerClose,status,followupMessage  } = req.body;
+        const { name, phone, email, resume, city, readytoRelocate, allowYoutoContact, careerId,isCareerClose,followups  } = req.body;
 
-        let updatedData = { name, phone, email, city, readytoRelocate, allowYoutoContact, careerId,isCareerClose,status,followupMessage  };
+        let updatedData = { name, phone, email, city, readytoRelocate, allowYoutoContact, careerId,isCareerClose,followups  };
 
         if (resume) {
             updatedData.resume = await processResume(resume);

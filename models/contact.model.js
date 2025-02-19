@@ -17,8 +17,7 @@ const contactSchema = new mongoose.Schema(
     pageName: { type: String, required: false, trim: true },
     isContactClose: { type: Boolean, required: true },
     showForAll: { type: Boolean, required: true },
-    status: { type: String, required: false, trim: true },
-    followupMessage: { type: String, required: false, trim: true },
+    followups: { type: mongoose.Schema.Types.Mixed, required: false },
   },
   { timestamps: true }
 );
