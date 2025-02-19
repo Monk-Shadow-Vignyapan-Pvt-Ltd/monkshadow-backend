@@ -48,7 +48,8 @@ const careerFormSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
-    
+    status: { type: String, required: false, trim: true },
+    followupMessage: { type: String, required: false, trim: true }, 
 }, {
     timestamps: true, // Adds createdAt and updatedAt fields automatically
 });
