@@ -97,6 +97,7 @@ export const getCareerForms = async (req, res) => {
     try {
         const region = req.baseUrl.includes("/canada") ? "canada" : "india";
         const CareerForm = getCareerFormModel(region);
+        const Career = getCareerModel(region);
         const careerForms = await CareerForm.find();
         if (!careerForms) {
           return res.status(404).json({ message: "No career forms found", success: false });
@@ -113,8 +114,18 @@ export const getCareerForms = async (req, res) => {
 
         // Paginate the reversed movies array
         const paginatedCareerForms = reversedCareerForms.slice(startIndex, endIndex);
+
+        const enhancedCareerForms = await Promise.all(
+            paginatedCareerForms.map(async (careerForm) => {
+                if (careerForm.careerId) {
+                    const career = await Career.findOne({ _id: careerForm.careerId });
+                    return { ...careerForm.toObject(), career }; // Convert Mongoose document to plain object
+                }
+                return careerForm.toObject(); // If no invoiceId, return appointment as-is
+            })
+        );
         return res.status(200).json({ 
-            careerForms:paginatedCareerForms, 
+            careerForms:enhancedCareerForms, 
             success: true ,
             pagination: {
             currentPage: page,
@@ -222,8 +233,18 @@ export const searchCareerForms = async (req, res) => {
             return res.status(404).json({ message: 'No matching results found', success: false });
         }
 
+        const enhancedCareerForms = await Promise.all(
+            mergedResults.map(async (careerForm) => {
+                if (careerForm.careerId) {
+                    const career = await Career.findOne({ _id: careerForm.careerId });
+                    return { ...careerForm.toObject(), career }; // Convert Mongoose document to plain object
+                }
+                return careerForm.toObject(); // If no invoiceId, return appointment as-is
+            })
+        );
+
         return res.status(200).json({
-            careerForms: mergedResults,
+            careerForms: enhancedCareerForms,
             success: true,
             pagination: {
                 currentPage: 1,
