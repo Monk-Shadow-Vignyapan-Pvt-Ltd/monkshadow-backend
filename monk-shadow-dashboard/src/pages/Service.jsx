@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { API_BASE_URL } from "../config/constant.js";
@@ -26,24 +26,21 @@ const Service = () => {
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
   const [parentId, setParentId] = useState("None -");
-  const [servicePrice, setServicePrice] = useState("");
+  const [servicePrice, setServicePrice] = useState();
   const [isAddOn, setIsAddOn] = useState(false);
   // const [addOnIs, setAddOnIs] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [editingContact, setEditingContact] = useState(null);
+  const [editingService, setEditingService] = useState(null);
   const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
   const { selectCountry } = useRoles();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredserviceList, setFilteredServiceList] = useState([]);
+  const [filteredSubServiceList, setFilteredSubServiceList] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(true);
   const [originalTotalPages, setOriginalTotalPages] = useState(0);
-
-console.log("-------");
-console.log(servicePrice);
-console.log("-------");
-
+  const [subServiceModel, setsubService] = useState(false);
 
   const fetchData = async (page) => {
     setIsLoading(true); // Start loading
@@ -54,7 +51,7 @@ console.log("-------");
 
       const servicesData = ServiceResponse?.data?.services;
 
-      console.log("Hello", ServiceResponse);
+      console.log("Response", ServiceResponse);
       // console.log("Hi",ServiceResponse.data.service);
 
       setServices(servicesData);
@@ -88,13 +85,14 @@ console.log("-------");
       parentId,
       description, // May be null if no file is provided
       isAddOn,
+      servicePrice,
     };
 
     console.log(isAddOn);
 
     try {
-      const endpoint = editingContact
-        ? `${API_BASE_URL}/${selectCountry}/service/updateService/${editingContact._id}`
+      const endpoint = editingService
+        ? `${API_BASE_URL}/${selectCountry}/service/updateService/${editingService._id}`
         : `${API_BASE_URL}/${selectCountry}/service/addService`;
 
       await axios.post(endpoint, data, {
@@ -102,7 +100,7 @@ console.log("-------");
       });
 
       toast.success(
-        editingContact
+        editingService
           ? "Service updated successfully!"
           : "Service added successfully!"
       );
@@ -126,17 +124,21 @@ console.log("-------");
   };
 
   const openModal = (services = null) => {
-    // setEditingContact(services);
+    setEditingService(services);
     setServiceName(services ? services.serviceName : "");
     setDescription(services ? services.description : "");
     setParentId(services ? services.parentId : "");
-    setIsAddOn(services ? services.isAddOn : "");
+    setIsAddOn(services ? services.isAddOn : false);
+    setServicePrice(services ? services.servicePrice : "");
     setIsAddEditModalOpen(true);
   };
 
   const closeAddEditModal = () => {
     setIsAddEditModalOpen(false);
-    setEditingContact(null);
+    setEditingService(null);
+  };
+  const closeSubServiceModel = () => {
+    setsubService(null);
   };
 
   const customStyles = {
@@ -171,6 +173,16 @@ console.log("-------");
       }
     }
   };
+
+  const openSubServiceModal = useCallback(
+    (parentId) => {
+      setsubService(true);
+      setFilteredSubServiceList(
+        filteredserviceList.filter((service) => service.parentId === parentId)
+      );
+    },
+    [filteredserviceList]
+  ); // Only re-create the function when `filteredserviceList` changes
 
   return (
     <>
@@ -212,66 +224,7 @@ console.log("-------");
               >
                 {filteredserviceList.map((service) => (
                   <>
-                    {service.parentId ?  <div
-                        key={service._id}
-                        className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
-                      >
-                        <div className="flex items-center gap-1">
-                          <span className="font-semibold text-sm">
-                            Service:
-                          </span>
-                          <span className="text-sm">{service.serviceName}</span>
-                        </div>
-                        <div className="flex flex-col items-start gap-1">
-                          <span className="font-semibold text-sm">
-                            Description:
-                          </span>
-                          <span className="text-sm">{service.description}</span>
-                        </div>
-                        {service.parentId && (
-                          <div className="flex items-center gap-1">
-                            <span className="font-semibold text-sm">
-                              Parent ID:
-                            </span>
-                            <span className="text-sm">{service.parentId}</span>
-                          </div>
-                        )}
-                        <div className="flex flex-row gap-1">
-                          <span className="font-semibold text-sm">
-                            is Addon:
-                          </span>
-                          <span className="text-sm">
-                            {service.isAddOn ? "Yes" : "No"}
-                          </span>
-                        </div>
-                        <div className="flex flex-row gap-1">
-                          <span className="font-semibold text-sm">Price</span>
-                          <span className="text-sm">
-                            {service.servicePrice ? service.servicePrice : "-"}
-                          </span>
-                        </div>
-                        {/* <div className="flex items-center gap-1">
-                      <input
-                        type="checkbox"
-                        checked={service.isContactClose}
-                        className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        // onChange={() => handleContactCloseToggle(service)}
-                      />
-                      <span className="font-semibold text-sm">
-                        service Close
-                      </span>
-                    </div> */}
-                        <div className="flex absolute top-2.5 right-2 gap-2">
-                          <button onClick={() => openModal(service)}>
-                            <EditIcon width={16} height={16} fill={"#444050"} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(service._id)}
-                          >
-                            <MdOutlineDelete size={23} fill="#F05F23" />
-                          </button>
-                        </div>
-                      </div> : (
+                    {service.parentId ? (
                       <div
                         key={service._id}
                         className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
@@ -310,17 +263,66 @@ console.log("-------");
                             {service.servicePrice ? service.servicePrice : "-"}
                           </span>
                         </div>
-                        {/* <div className="flex items-center gap-1">
-                      <input
-                        type="checkbox"
-                        checked={service.isContactClose}
-                        className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        // onChange={() => handleContactCloseToggle(service)}
-                      />
-                      <span className="font-semibold text-sm">
-                        service Close
-                      </span>
-                    </div> */}
+                        <div className="flex absolute top-2.5 right-2 gap-2">
+                          <button onClick={() => openModal(service)}>
+                            <EditIcon width={16} height={16} fill={"#444050"} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(service._id)}
+                          >
+                            <MdOutlineDelete size={23} fill="#F05F23" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        key={service._id}
+                        className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
+                      >
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-sm">
+                            Service:
+                          </span>
+                          <span className="text-sm">{service.serviceName}</span>
+                        </div>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className="font-semibold text-sm">
+                            Description:
+                          </span>
+                          <span className="text-sm">{service.description}</span>
+                        </div>
+                        {service.parentId && (
+                          <div className="flex items-center gap-1">
+                            <span className="font-semibold text-sm">
+                              Parent ID:
+                            </span>
+                            <span className="text-sm">{service.parentId}</span>
+                          </div>
+                        )}
+                        <div className="flex flex-row gap-1">
+                          <span className="font-semibold text-sm">
+                            is Addon:
+                          </span>
+                          <span className="text-sm">
+                            {service.isAddOn ? "Yes" : "No"}
+                          </span>
+                        </div>
+                        <div className="flex flex-row gap-1">
+                          <span className="font-semibold text-sm">Price</span>
+                          <span className="text-sm">
+                            {service.servicePrice ? service.servicePrice : "-"}
+                          </span>
+                        </div>
+                        <div className="mt-2">
+                          <button
+                            className="px-6 py-2 rounded-lg text-cardBg text-md font-medium  bg-green-600 hover:bg-green-700"
+                            onClick={() =>
+                              openSubServiceModal(service.serviceName)
+                            }
+                          >
+                            View Sub Serice
+                          </button>
+                        </div>
                         <div className="flex absolute top-2.5 right-2 gap-2">
                           <button onClick={() => openModal(service)}>
                             <EditIcon width={16} height={16} fill={"#444050"} />
@@ -361,7 +363,7 @@ console.log("-------");
               overlayClassName="overlay"
             >
               <h2 className="text-xl font-bold text-accent">
-                {editingContact ? "Edit Service" : "Add Service"}
+                {editingService ? "Edit Service" : "Add Service"}
               </h2>
               <div className="flex flex-col gap-1">
                 <label
@@ -486,7 +488,7 @@ console.log("-------");
                 </label>
                 <input
                   id="price"
-                  type="text"
+                  type="number"
                   disabled={!isAddOn ? "disabled" : ""}
                   value={servicePrice}
                   placeholder="Price"
@@ -498,15 +500,61 @@ console.log("-------");
                 <button
                   onClick={handleSubmit}
                   className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
-                    editingContact
+                    editingService
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {editingContact ? "Update Service" : "Add Service"}
+                  {editingService ? "Update Service" : "Add Service"}
                 </button>
                 <button
                   onClick={closeAddEditModal}
+                  className="px-6 py-2 rounded-lg font-medium text-md text-cardBg bg-dangerRed duration-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </Modal>
+            <Modal
+              isOpen={subServiceModel}
+              onRequestClose={closeSubServiceModel}
+              contentLabel="Service Modal"
+              className="w-full max-w-[500px] max-h-[96vh] overflow-auto bg-cardBg z-50 m-4 p-6 rounded-2xl flex flex-col gap-4"
+              overlayClassName="overlay"
+            >
+              <h2 className="text-xl font-bold text-accent">Sub Service</h2>
+              <div className="flex flex-col gap-1">
+                {/* <label
+                  htmlFor="serviceName"
+                  className="block text-sm font-semibold"
+                >
+                  
+                </label> */}
+                {filteredSubServiceList.length > 0 &&
+                  filteredSubServiceList.map((service) => (
+                    <>
+                      <div className="flex justify-between w-full text-sm mt-3">
+                        <div className="block">{service.serviceName}</div>
+                        <div className="block">
+                          {service.servicePrice ? service.servicePrice : "-"}
+                        </div>
+                      </div>
+                    </>
+                  ))}
+              </div>
+              <div className="grid grid-cols-2 gap-3 m-x-4 w-full">
+                <button
+                  // onClick={handleSubmit}
+                  className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
+                    editingService
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  {editingService ? "Update Service" : "Add Service"}
+                </button>
+                <button
+                  onClick={() => setsubService(false)}
                   className="px-6 py-2 rounded-lg font-medium text-md text-cardBg bg-dangerRed duration-300"
                 >
                   Cancel

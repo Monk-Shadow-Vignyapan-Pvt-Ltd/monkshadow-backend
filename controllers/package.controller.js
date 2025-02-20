@@ -6,7 +6,7 @@ export const addPackage_ = async (req, res) => {
     const region = req.baseUrl.includes("/canada") ? "canada" : "india";
     const Package = getPackageModel(region);
 
-    const { packageName, services, noOfPages, message,domesticPrice, duration, lockingPeriod,internationalPrice,note, isPackageClose,showForAll,followups } = req.body;
+    const { packageName, services, noOfPages, domesticPrice, duration, lockingPeriod,internationalPrice,note } = req.body;
 
     if (!packageName || !services ) {
       return res.status(400).json({ message: "Please provide all required fields", success: false });
@@ -15,7 +15,7 @@ export const addPackage_ = async (req, res) => {
     
 
     // Create a new Package document
-    const newPackage = new Package({ packageName, services, noOfPages, message,lockingPeriod,domesticPrice,internationalPrice,duration,note, isPackageClose,showForAll,followups });
+    const newPackage = new Package({ packageName, services, noOfPages, lockingPeriod,domesticPrice,internationalPrice,duration,note });
     await newPackage.save();
 
     res.status(201).json({ message: "Package added successfully", package: newPackage, success: true });
@@ -66,9 +66,9 @@ export const updatePackage = async (req, res) => {
     const Package = getPackageModel(region);
 
     const { id } = req.params;
-    const { packageName, services, noOfPages, message,lockingPeriod,domesticPrice, internationalPrice,duration, note, isPackageClose,showForAll,followups } = req.body;
+    const { packageName, services, noOfPages, lockingPeriod,domesticPrice, internationalPrice,duration, note } = req.body;
 
-    const updatedData = { packageName, services, noOfPages, message,lockingPeriod,domesticPrice,internationalPrice,duration,note, isPackageClose,showForAll,followups };
+    const updatedData = { packageName, services, noOfPages, message,lockingPeriod,domesticPrice,internationalPrice,duration,note};
 
     const package_ = await Package.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
 
@@ -121,8 +121,7 @@ export const searchPackages = async (req, res) => {
                 { domesticPrice: regex },
                 { internationalPrice: regex },
                 { duration: regex },
-                { note: regex },
-                { internationalPrice: regex }
+                { note: regex }
             ]
         });
 
