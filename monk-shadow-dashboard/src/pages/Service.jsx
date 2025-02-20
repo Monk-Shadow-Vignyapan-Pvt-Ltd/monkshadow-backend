@@ -25,9 +25,10 @@ const Service = () => {
   const [services, setServices] = useState([]);
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
-  const [parentId, setParentId] = useState("");
-  const [isAddOn, setIsAddOn] = useState("");
-  const [addOnIs, setAddOnIs] = useState(false);
+  const [parentId, setParentId] = useState("None -");
+  const [servicePrice, setServicePrice] = useState("");
+  const [isAddOn, setIsAddOn] = useState(false);
+  // const [addOnIs, setAddOnIs] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingContact, setEditingContact] = useState(null);
@@ -39,6 +40,11 @@ const Service = () => {
   const [isSearchLoading, setIsSearchLoading] = useState(true);
   const [originalTotalPages, setOriginalTotalPages] = useState(0);
 
+console.log("-------");
+console.log(servicePrice);
+console.log("-------");
+
+
   const fetchData = async (page) => {
     setIsLoading(true); // Start loading
     try {
@@ -48,7 +54,11 @@ const Service = () => {
 
       const servicesData = ServiceResponse?.data?.services;
 
+      console.log("Hello", ServiceResponse);
+      // console.log("Hi",ServiceResponse.data.service);
+
       setServices(servicesData);
+      setFilteredServiceList(servicesData);
       setOriginalTotalPages(ServiceResponse.data.pagination.totalPages);
       setTotalPages(ServiceResponse.data.pagination.totalPages);
     } catch (error) {
@@ -58,6 +68,8 @@ const Service = () => {
       setIsLoading(false); // Stop loading
     }
   };
+
+  // console.log("parentId", parentId);
 
   useEffect(() => {
     fetchData(currentPage);
@@ -78,6 +90,8 @@ const Service = () => {
       isAddOn,
     };
 
+    console.log(isAddOn);
+
     try {
       const endpoint = editingContact
         ? `${API_BASE_URL}/${selectCountry}/service/updateService/${editingContact._id}`
@@ -89,16 +103,16 @@ const Service = () => {
 
       toast.success(
         editingContact
-          ? "Contact updated successfully!"
-          : "Contact added successfully!"
+          ? "Service updated successfully!"
+          : "Service added successfully!"
       );
 
       fetchData();
       setIsLoading(false);
       closeAddEditModal();
     } catch (error) {
-      console.error("Error uploading contact:", error);
-      toast.error("Failed to upload contact.");
+      console.error("Error uploading service:", error);
+      toast.error("Failed to upload service.");
     } finally {
     }
   };
@@ -112,14 +126,11 @@ const Service = () => {
   };
 
   const openModal = (services = null) => {
-    setEditingContact(services);
+    // setEditingContact(services);
     setServiceName(services ? services.serviceName : "");
     setDescription(services ? services.description : "");
     setParentId(services ? services.parentId : "");
     setIsAddOn(services ? services.isAddOn : "");
-    setPageName(services ? services.pageName : "");
-    setCompanyName(services ? services.companyName : "");
-    setWebsiteUrl(services ? services.websiteUrl : "");
     setIsAddEditModalOpen(true);
   };
 
@@ -145,18 +156,18 @@ const Service = () => {
   };
 
   const handleDeleteClick = async (id) => {
-    if (window.confirm("Are you sure you want to delete this contact?")) {
+    if (window.confirm("Are you sure you want to delete this service?")) {
       try {
         setIsLoading(true);
         await axios.delete(
-          `${API_BASE_URL}/${selectCountry}/contacts/deleteContact/${id}`
+          `${API_BASE_URL}/${selectCountry}/service/deleteService/${id}`
         );
-        toast.success("contact deleted successfully!");
+        toast.success("service deleted successfully!");
         fetchData();
         setIsLoading(false);
       } catch (error) {
-        console.error("Error deleting contact:", error);
-        toast.error("Failed to delete contact.");
+        console.error("Error deleting service:", error);
+        toast.error("Failed to delete service.");
       }
     }
   };
@@ -200,29 +211,46 @@ const Service = () => {
                 className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}
               >
                 {filteredserviceList.map((service) => (
-                  <div
-                    key={service._id}
-                    className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-sm">Service:</span>
-                      <span className="text-sm">{service.serviceName}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-sm">
-                        Description:
-                      </span>
-                      <span className="text-sm">{service.description}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-sm">Parent ID:</span>
-                      <span className="text-sm">{service.parentId}</span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="font-semibold text-sm">is Addon</span>
-                      <span className="text-sm">{service.isAddOn}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
+                  <>
+                    {service.parentId ?  <div
+                        key={service._id}
+                        className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
+                      >
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-sm">
+                            Service:
+                          </span>
+                          <span className="text-sm">{service.serviceName}</span>
+                        </div>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className="font-semibold text-sm">
+                            Description:
+                          </span>
+                          <span className="text-sm">{service.description}</span>
+                        </div>
+                        {service.parentId && (
+                          <div className="flex items-center gap-1">
+                            <span className="font-semibold text-sm">
+                              Parent ID:
+                            </span>
+                            <span className="text-sm">{service.parentId}</span>
+                          </div>
+                        )}
+                        <div className="flex flex-row gap-1">
+                          <span className="font-semibold text-sm">
+                            is Addon:
+                          </span>
+                          <span className="text-sm">
+                            {service.isAddOn ? "Yes" : "No"}
+                          </span>
+                        </div>
+                        <div className="flex flex-row gap-1">
+                          <span className="font-semibold text-sm">Price</span>
+                          <span className="text-sm">
+                            {service.servicePrice ? service.servicePrice : "-"}
+                          </span>
+                        </div>
+                        {/* <div className="flex items-center gap-1">
                       <input
                         type="checkbox"
                         checked={service.isContactClose}
@@ -232,18 +260,80 @@ const Service = () => {
                       <span className="font-semibold text-sm">
                         service Close
                       </span>
-                    </div>
-                    <div className="flex absolute top-2.5 right-2 gap-2">
-                      <button onClick={() => openModal(service)}>
-                        <EditIcon width={16} height={16} fill={"#444050"} />
-                      </button>
-                      <button
-                      // onClick={() => handleDeleteClick(users._id)}
+                    </div> */}
+                        <div className="flex absolute top-2.5 right-2 gap-2">
+                          <button onClick={() => openModal(service)}>
+                            <EditIcon width={16} height={16} fill={"#444050"} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(service._id)}
+                          >
+                            <MdOutlineDelete size={23} fill="#F05F23" />
+                          </button>
+                        </div>
+                      </div> : (
+                      <div
+                        key={service._id}
+                        className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
                       >
-                        <MdOutlineDelete size={23} fill="#F05F23" />
-                      </button>
-                    </div>
-                  </div>
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-sm">
+                            Service:
+                          </span>
+                          <span className="text-sm">{service.serviceName}</span>
+                        </div>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className="font-semibold text-sm">
+                            Description:
+                          </span>
+                          <span className="text-sm">{service.description}</span>
+                        </div>
+                        {service.parentId && (
+                          <div className="flex items-center gap-1">
+                            <span className="font-semibold text-sm">
+                              Parent ID:
+                            </span>
+                            <span className="text-sm">{service.parentId}</span>
+                          </div>
+                        )}
+                        <div className="flex flex-row gap-1">
+                          <span className="font-semibold text-sm">
+                            is Addon:
+                          </span>
+                          <span className="text-sm">
+                            {service.isAddOn ? "Yes" : "No"}
+                          </span>
+                        </div>
+                        <div className="flex flex-row gap-1">
+                          <span className="font-semibold text-sm">Price</span>
+                          <span className="text-sm">
+                            {service.servicePrice ? service.servicePrice : "-"}
+                          </span>
+                        </div>
+                        {/* <div className="flex items-center gap-1">
+                      <input
+                        type="checkbox"
+                        checked={service.isContactClose}
+                        className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        // onChange={() => handleContactCloseToggle(service)}
+                      />
+                      <span className="font-semibold text-sm">
+                        service Close
+                      </span>
+                    </div> */}
+                        <div className="flex absolute top-2.5 right-2 gap-2">
+                          <button onClick={() => openModal(service)}>
+                            <EditIcon width={16} height={16} fill={"#444050"} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(service._id)}
+                          >
+                            <MdOutlineDelete size={23} fill="#F05F23" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ))}
               </div>
             )}
@@ -266,12 +356,12 @@ const Service = () => {
             <Modal
               isOpen={isAddEditModalOpen}
               onRequestClose={closeAddEditModal}
-              contentLabel="Contact Modal"
+              contentLabel="Service Modal"
               className="w-full max-w-[500px] max-h-[96vh] overflow-auto bg-cardBg z-50 m-4 p-6 rounded-2xl flex flex-col gap-4"
               overlayClassName="overlay"
             >
               <h2 className="text-xl font-bold text-accent">
-                {editingContact ? "Edit Contact" : "Add Service"}
+                {editingContact ? "Edit Service" : "Add Service"}
               </h2>
               <div className="flex flex-col gap-1">
                 <label
@@ -285,7 +375,7 @@ const Service = () => {
                   type="text"
                   value={serviceName}
                   placeholder="Enter Service"
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setServiceName(e.target.value)}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>
@@ -296,7 +386,7 @@ const Service = () => {
                 >
                   Description
                 </label>
-                <input
+                <textarea
                   id="description"
                   type="text"
                   value={description}
@@ -309,18 +399,42 @@ const Service = () => {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="parentId"
-                  className="block text-sm font-semibold required"
+                  className="block text-sm font-semibold"
                 >
                   Parent ID
                 </label>
-                <input
-                  id="parentId"
+                {/* <input
+                
                   type="text"
                   value={parentId}
                   placeholder="Enter parentId No:"
-                  onChange={(e) => setParentId(e.target.value)}
+                 
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                />
+                /> */}
+                <select
+                  className="bg-mainBg  text-black focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                  id="parentId"
+                  name="parentId"
+                  placeholder="Enter parentId No:"
+                  onChange={(e) => setParentId(e.target.value)}
+                >
+                  <option
+                    name="parentId"
+                    className="text-black"
+                    value={parentId}
+                  >
+                    None -
+                  </option>
+                  {filteredserviceList.map((service) => (
+                    <>
+                      {service.serviceName && service.parentId == "" && (
+                        <option className="text-black">
+                          {service.serviceName}
+                        </option>
+                      )}
+                    </>
+                  ))}
+                </select>
               </div>
 
               <div className="flex flex-col gap-1">
@@ -336,7 +450,8 @@ const Service = () => {
                       type="radio"
                       name="Yes"
                       placeholder="Yes"
-                      onClick={() => setAddOnIs(true)}
+                      value={isAddOn}
+                      onClick={() => setIsAddOn(true)}
                     />
                     <span className="block text-sm font-semibold pt-0.5">
                       Yes
@@ -345,9 +460,10 @@ const Service = () => {
                   <div className="flex items-center gap-1">
                     <input
                       type="radio"
-                      name="No"
+                      name="Yes"
                       placeholder="No"
-                      onClick={() => setAddOnIs(false)}
+                      value={isAddOn}
+                      onClick={() => setIsAddOn(false)}
                     />
                     <span className="block text-sm font-semibold pt-0.5">
                       No
@@ -355,34 +471,39 @@ const Service = () => {
                   </div>
                 </div>
               </div>
-              {addOnIs && (
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="parentId"
-                    className="block text-sm font-semibold required"
-                  >
-                    Price
-                  </label>
-                  <input
-                    id="parentId"
-                    type="text"
-                    value={parentId}
-                    placeholder="Price"
-                    onChange={(e) => setParentId(e.target.value)}
-                    className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                  />
-                </div>
-              )}
+
+              <div
+                className={`flex flex-col gap-1 ${
+                  isAddOn == false && "opacity-50"
+                }`}
+              >
+                <label
+                  htmlFor="parentId"
+                  disabled={isAddOn}
+                  className={`block text-sm font-semibold required`}
+                >
+                  Price
+                </label>
+                <input
+                  id="price"
+                  type="text"
+                  disabled={!isAddOn ? "disabled" : ""}
+                  value={servicePrice}
+                  placeholder="Price"
+                  onChange={(e) => setServicePrice(e.target.value)}
+                  className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                />
+              </div>
               <div className="grid grid-cols-2 gap-3 m-x-4 w-full">
                 <button
-                  // onClick={handleSubmit}
+                  onClick={handleSubmit}
                   className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
                     editingContact
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {editingContact ? "Update Contact" : "Add Service"}
+                  {editingContact ? "Update Service" : "Add Service"}
                 </button>
                 <button
                   onClick={closeAddEditModal}

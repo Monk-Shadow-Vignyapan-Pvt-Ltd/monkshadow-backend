@@ -7,20 +7,16 @@ export const addService = async (req, res) => {
     const region = req.baseUrl.includes("/canada") ? "canada" : "india";
     const Service = getServiceModel(region);
 
-    const { serviceName, description,parentId,isAddOn } = req.body;
-
-    console.log(serviceName, description);
-    console.log("service", Service);
+    const { serviceName, description,parentId,isAddOn,servicePrice } = req.body;
     
 
     if (!serviceName || !description ) {
       return res.status(400).json({ message: "Please provide all required fields", success: false });
     }
 
-    
 
     // Create a new Service document
-    const newService = new Service({ serviceName, description, parentId,isAddOn });
+    const newService = new Service({ serviceName, description, parentId,isAddOn,servicePrice });
     await newService.save();
 
     res.status(201).json({ message: "Service added successfully", service: newService, success: true });
@@ -71,9 +67,9 @@ export const updateService = async (req, res) => {
     const Service = getServiceModel(region);
 
     const { id } = req.params;
-    const { serviceName, description, message,  } = req.body;
+    const { serviceName, description,parentId,isAddOn,servicePrice  } = req.body;
 
-    const updatedData = { serviceName, description, message, };
+    const updatedData = { serviceName, description,parentId,isAddOn,servicePrice };
 
     const service_ = await Service.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
 
@@ -121,8 +117,8 @@ export const searchSerives = async (req, res) => {
                 { serviceName: regex },
                 { description: regex },
                 { parentId: regex },
-                { note: isAddOn },
-                { message: regex },
+                { isAddOn: regex },
+                { servicePrice: isAddOn },
             ]
         });
 
