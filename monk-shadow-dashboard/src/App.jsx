@@ -16,6 +16,7 @@ import { RolesProvider } from './RolesContext';
 import Career from './pages/Career';
 import CareerForms from './pages/CareerForms';
 import Package from './pages/package';
+import Service from './pages/Service';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         { index: true, element: <Home /> },
         { path: 'users', element: <Users /> },
         { path: 'package', element: <Package /> },
+        { path: 'service', element: <Service /> },
         { path: 'contacts', element: <Home /> },
         { path: 'career', element:<Career />},
         { path: 'career-forms', element:<CareerForms />},

@@ -43,6 +43,7 @@ app.use("/api/v1/canada/packages", routes.packageRoute);
 app.use("/api/v1/india/contacts", routes.contactRoute);
 app.use("/api/v1/india/careers", routes.careerRoute);
 app.use("/api/v1/india/packages", routes.packageRoute);
+app.use("/api/v1/canada/service", routes.serviceRoute);
 
 
 app.listen(PORT, () => {
