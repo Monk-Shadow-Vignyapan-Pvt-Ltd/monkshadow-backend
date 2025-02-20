@@ -7,9 +7,10 @@ export const addService = async (req, res) => {
     const region = req.baseUrl.includes("/canada") ? "canada" : "india";
     const Service = getServiceModel(region);
 
-    const { serviceName, description, message } = req.body;
+    const { serviceName, description,parentId,isAddOn } = req.body;
 
     console.log(serviceName, description);
+    console.log("service", Service);
     
 
     if (!serviceName || !description ) {
@@ -19,7 +20,7 @@ export const addService = async (req, res) => {
     
 
     // Create a new Service document
-    const newService = new Service({ serviceName, description, message });
+    const newService = new Service({ serviceName, description, parentId,isAddOn });
     await newService.save();
 
     res.status(201).json({ message: "Service added successfully", service: newService, success: true });
@@ -32,8 +33,8 @@ export const addService = async (req, res) => {
 export const getServices = async (req, res) => {
     try {
       const region = req.baseUrl.includes("/canada") ? "canada" : "india";
-      const Sertvice = getServiceModel(region);
-        const service = await Sertvice.find();
+      const Service = getServiceModel(region);
+        const service = await Service.find();
         if (!service) {
           return res.status(404).json({ message: "No service found", success: false });
         }
@@ -54,8 +55,8 @@ export const getServices = async (req, res) => {
             success: true ,
             pagination: {
             currentPage: page,
-            totalPages: Math.ceil(services.length / limit),
-            totalusers: services.length,
+            totalPages: Math.ceil(service.length / limit),
+            totalusers: service.length,
         },});
     } catch (error) {
         console.error('Error fetching services:', error);
