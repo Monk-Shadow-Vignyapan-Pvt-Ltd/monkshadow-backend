@@ -9,6 +9,9 @@ export const addService = async (req, res) => {
 
     const { serviceName, description, message } = req.body;
 
+    console.log(serviceName, description);
+    
+
     if (!serviceName || !description ) {
       return res.status(400).json({ message: "Please provide all required fields", success: false });
     }
