@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import DataTable from "react-data-table-component";
@@ -25,74 +25,43 @@ import "react-loading-skeleton/dist/skeleton.css";
 Modal.setAppElement("#root");
 
 const Package = () => {
-  const [contacts, setContacts] = useState([]);
-  const [followupsByContact, setFollowupsByContact] = useState({});
-  const [selectedContactFollowups, setSelectedContactFollowups] = useState([]);
+  const [packages, setPackages] = useState("");
+  const [packageName, setPackageName] = useState("");
+  const [services, setServices] = useState("");
+  const [noOfPages, setNoOfPages] = useState("");
+  const [domesticPrice, setDomesticPrice] = useState("");
+  const [duration, setduration] = useState("");
+  const [lockingPeriod, setLockingPeriod] = useState("");
+  const [internationalPrice, setInternationalPrice] = useState("");
+  const [note, setnote] = useState();
+  // const [addOnIs, setAddOnIs] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [searchQuery, setSearchQuery] = useState("");
-  const { selectCountry } = useRoles();
-  const { role } = useRoles();
-  const [editingContact, setEditingContact] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editingPackage, setEditingPackage] = useState(null);
   const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
-  const [pageName, setPageName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [pages, setPages] = useState([
-    "contactus",
-    "Package",
-    "seo",
-    "performancemarketing",
-    "webdevelopment",
-  ]);
-  const [selectedContact, setSelectedContact] = useState({});
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [editingStatus, setEditingStatus] = useState(null);
-  const [newStatus, setNewStatus] = useState("");
-  const [followStatus, setFollowStatus] = useState("Pending");
-  const [followupMessage, setFollowupMessage] = useState("");
-  const [customStatuses, setCustomStatuses] = useState([]);
-  const [isStatusLoading, setIsStatusLoading] = useState(true);
-  const [editStatusLoading, setEditStatusLoading] = useState(false);
-  const [isFollowUpLoading, setIsFollowUpLoading] = useState(false);
-
+  const { selectCountry } = useRoles();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredContactsList, setFilteredContactsList] = useState([]);
-  const [originalTotalPages, setOriginalTotalPages] = useState(0);
+  const [filteredPackageList, setFilteredPackageList] = useState([]);
   const [isSearchLoading, setIsSearchLoading] = useState(true);
+  const [originalTotalPages, setOriginalTotalPages] = useState(0);
+  const [subServiceModel, setsubService] = useState(false);
 
   const fetchData = async (page) => {
     setIsLoading(true); // Start loading
     try {
-      const contactsResponse = await axios.get(
-        `${API_BASE_URL}/${selectCountry}/contacts/getContacts?page=${page}`
+      const PackageResponse = await axios.get(
+        `${API_BASE_URL}/${selectCountry}/packages/getPackages?page=${page}`
       );
 
-      const contactsData =
-        role === "India"
-          ? contactsResponse?.data?.contacts
-          : contactsResponse?.data?.contacts.filter(
-              (contact) => contact.showForAll
-            ) || [];
-      //const followupsData = followupsResponse?.data?.followups || [];
+      const packageData = PackageResponse?.data?.packages;
 
-      setContacts(contactsData);
-      setFilteredContactsList(contactsData);
-      setOriginalTotalPages(contactsResponse.data.pagination.totalPages);
-      setTotalPages(contactsResponse.data.pagination.totalPages);
-      // const groupedFollowups = followupsData.reduce((acc, followup) => {
-      //     const { contactId } = followup;
-      //     if (!acc[contactId]) acc[contactId] = [];
-      //     acc[contactId].push(followup);
-      //     return acc;
-      // }, {});
+      console.log("Response pack", PackageResponse);
 
-      // setFollowupsByContact(groupedFollowups);
+      setPackages(packageData);
+      setFilteredPackageList(packageData);
+      setOriginalTotalPages(PackageResponse.data.pagination.totalPages);
+      setTotalPages(PackageResponse.data.pagination.totalPages);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch data.");
@@ -101,27 +70,53 @@ const Package = () => {
     }
   };
 
-  const fetchSearchData = async (query) => {
-    if (query && query.trim()) {
-      setSearchQuery(query);
-      setIsSearchLoading(false);
-      try {
-        const response = await axios.post(
-          `${API_BASE_URL}/${selectCountry}/contacts/searchContacts/?search=${query}`
-        );
-        setFilteredContactsList(response.data.contacts);
-        setCurrentPage(1);
-        setTotalPages(1);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsSearchLoading(true);
-      }
-    } else {
-      setSearchQuery("");
-      setFilteredContactsList(contacts);
-      setCurrentPage(1);
-      setTotalPages(originalTotalPages);
+  // console.log("parentId", parentId);
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage]);
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+
+    if (!packageName || !services) {
+      setIsLoading(false);
+      return toast.warn("Please fill out all required fields.");
+    }
+
+    const data = {
+      packageName,
+      services,
+      noOfPages, // May be null if no file is provided
+      domesticPrice,
+      duration,
+      lockingPeriod,
+      internationalPrice,
+      note,
+    };
+
+    try {
+      const endpoint = editingPackage
+        ? `${API_BASE_URL}/${selectCountry}/packages/getPackages/${editingPackage._id}`
+        : `${API_BASE_URL}/${selectCountry}/packages/addPackage_`;
+
+      await axios.post(endpoint, data, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      toast.success(
+        editingPackage
+          ? "Package updated successfully!"
+          : "Package added successfully!"
+      );
+
+      fetchData();
+      setIsLoading(false);
+      closeAddEditModal();
+    } catch (error) {
+      console.error("Error uploading Package:", error);
+      toast.error("Failed to upload Package.");
+    } finally {
     }
   };
 
@@ -129,366 +124,30 @@ const Package = () => {
     setCurrentPage(page);
   };
 
-  const fetchStatuses = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/statuses/getStatuses`);
-      setCustomStatuses(response.data.statuses);
-      setIsStatusLoading(false);
-      setEditStatusLoading(false);
-    } catch (error) {
-      console.error("Error fetching statuses:", error);
-      toast.error("Failed to fetch statuses.");
-    }
-  };
-
-  useEffect(() => {
-    // fetchData();
-    fetchStatuses();
-  }, []);
-
-  useEffect(() => {
-    fetchData(currentPage);
-  }, [selectCountry, currentPage]);
-
-  const handleShowFollowups = (contact) => {
-    // const followups = followupsByContact[contactId] || [];
-    // const sortedFollowups = [...followups].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-    // setSelectedContactFollowups(sortedFollowups);
-    setSelectedContact(contact);
-    setIsModalOpen(true);
-  };
-
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  const openModal = (contact = null) => {
-    setEditingContact(contact);
-    setName(contact ? contact.name : "");
-    setEmail(contact ? contact.email : "");
-    setPhone(contact ? contact.phone : "");
-    setMessage(contact ? contact.message : "");
-    setPageName(contact ? contact.pageName : "");
-    setCompanyName(contact ? contact.companyName : "");
-    setWebsiteUrl(contact ? contact.websiteUrl : "");
+  const openModal = (packages = null) => {
+    setEditingPackage(packages);
+    setPackageName(packages ? packages.serviceName : "");
+    setServices(packages ? packages.setServices : "");
+    setNoOfPages(packages ? packages.parentId : "");
+    setDomesticPrice(packages ? packages.domesticPrice : false);
+    setnote(packages ? packages.note : "");
+    setduration(packages ? packages.duration : "");
+    setLockingPeriod(packages ? packages.lockingPeriod : "");
+    setInternationalPrice(packages ? packages.internationalPrice : "");
+    setnote(packages ? packages.note : "");
     setIsAddEditModalOpen(true);
   };
 
   const closeAddEditModal = () => {
     setIsAddEditModalOpen(false);
-    setEditingContact(null);
+    setEditingPackage(null);
   };
-
-  const handleSubmit = async () => {
-    setIsLoading(true);
-
-    if (!name || !phone || !email) {
-      setIsLoading(false);
-      return toast.warn("Please fill out all required fields.");
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setIsLoading(false);
-      return toast.warn("Please enter a valid email address.");
-    }
-
-    const data = {
-      name,
-      phone,
-      email, // May be null if no file is provided
-      message,
-      companyName: selectCountry === "canada" ? companyName : null,
-      websiteUrl: selectCountry === "canada" ? websiteUrl : null,
-      pageName: selectCountry === "canada" ? pageName : null,
-      isContactClose: editingContact ? editingContact.isContactClose : false,
-      showForAll: editingContact
-        ? editingContact.showForAll
-        : role === "India"
-        ? false
-        : true,
-    };
-
-    try {
-      const endpoint = editingContact
-        ? `${API_BASE_URL}/${selectCountry}/contacts/updateContact/${editingContact._id}`
-        : `${API_BASE_URL}/${selectCountry}/contacts/addContact`;
-
-      await axios.post(endpoint, data, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      toast.success(
-        editingContact
-          ? "Contact updated successfully!"
-          : "Contact added successfully!"
-      );
-
-      fetchData();
-      setIsLoading(false);
-      closeAddEditModal();
-    } catch (error) {
-      console.error("Error uploading contact:", error);
-      toast.error("Failed to upload contact.");
-    } finally {
-    }
-  };
-
-  const handleDeleteClick = async (id) => {
-    if (window.confirm("Are you sure you want to delete this contact?")) {
-      try {
-        setIsLoading(true);
-        await axios.delete(
-          `${API_BASE_URL}/${selectCountry}/contacts/deleteContact/${id}`
-        );
-        toast.success("contact deleted successfully!");
-        fetchData();
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error deleting contact:", error);
-        toast.error("Failed to delete contact.");
-      }
-    }
-  };
-
-  const contactColumns = [
-    {
-      name: "Name",
-      // selector: row => row.name,
-      selector: (row) => (
-        <div id={`tooltip-${row.name}`} className="tooltip-wrapper">
-          {row.name}
-          <ReactTooltip
-            anchorId={`tooltip-${row.name}`}
-            place="top"
-            content={row.name}
-          />
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Phone",
-      // selector: row => row.phone,
-      selector: (row) => (
-        <div id={`tooltip-${row.phone}`} className="tooltip-wrapper">
-          {row.phone}
-          <ReactTooltip
-            anchorId={`tooltip-${row.phone}`}
-            place="top"
-            content={row.phone}
-          />
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Email",
-      // selector: row => row.email,
-      selector: (row) => (
-        <div id={`tooltip-${row.email}`} className="tooltip-wrapper">
-          {row.email}
-          <ReactTooltip
-            anchorId={`tooltip-${row.email}`}
-            place="top"
-            content={row.email}
-          />
-        </div>
-      ),
-      sortable: true,
-    },
-    {
-      name: "Message",
-      // selector: row => row.message,
-      selector: (row) => (
-        <div id={`tooltip-${row.message}`} className="tooltip-wrapper">
-          {row.message}
-          <ReactTooltip
-            anchorId={`tooltip-${row.message}`}
-            place="top"
-            content={row.message}
-          />
-        </div>
-      ),
-      sortable: true,
-    },
-    ...(selectCountry === "canada"
-      ? [
-          {
-            name: "Inquiry About",
-            // selector: row => row.message,
-            selector: (row) => (
-              <div id={`tooltip-${row.pageName}`} className="tooltip-wrapper">
-                {row.pageName}
-                <ReactTooltip
-                  anchorId={`tooltip-${row.pageName}`}
-                  place="top"
-                  content={row.pageName}
-                />
-              </div>
-            ),
-            sortable: true,
-          },
-        ]
-      : []),
-    ...(selectCountry === "canada"
-      ? [
-          {
-            name: "Company Name",
-            // selector: row => row.message,
-            selector: (row) => (
-              <div
-                id={`tooltip-${
-                  row.companyName ? row.companyName : row.websiteUrl
-                }`}
-                className="tooltip-wrapper"
-              >
-                {row.companyName ? row.companyName : row.websiteUrl}
-                <ReactTooltip
-                  anchorId={`tooltip-${
-                    row.companyName ? row.companyName : row.websiteUrl
-                  }`}
-                  place="top"
-                  content={row.companyName ? row.companyName : row.websiteUrl}
-                />
-              </div>
-            ),
-            sortable: true,
-          },
-        ]
-      : []),
-
-    {
-      name: "Follow-Ups",
-      cell: (row) => (
-        <button
-          className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
-          onClick={() => handleShowFollowups(row)}
-        >
-          Follow-Up
-        </button>
-      ),
-    },
-    {
-      name: "Contact Close",
-      cell: (row) => (
-        <div className="flex justify-center items-center">
-          <input
-            type="checkbox"
-            checked={row.isContactClose}
-            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            onChange={() => handleContactCloseToggle(row)}
-          />
-        </div>
-      ),
-      center: true,
-    },
-    ...(selectCountry === "canada" && role === "India"
-      ? [
-          {
-            name: "Show For All",
-            cell: (row) => (
-              <div className="flex gap-4">
-                <input
-                  type="checkbox"
-                  checked={row.showForAll}
-                  className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                  onChange={() => handleShowForAllToggle(row)}
-                />
-              </div>
-            ),
-            center: true,
-          },
-        ]
-      : []),
-
-    {
-      name: "Actions",
-
-      cell: (row) => (
-        <div className="flex gap-4">
-          <button onClick={() => openModal(row)}>
-            <EditIcon width={20} height={20} fill={"#444050"} />
-          </button>
-          <button onClick={() => handleDeleteClick(row._id)}>
-            <MdOutlineDelete size={26} fill="#ff2023" />
-          </button>
-          {/* <div id={`tooltip-${row._id}`} className="tooltip-wrapper">
-                                <IoIosInformationCircleOutline size={26} fill={"#444050"} />
-                            </div>
-                            <ReactTooltip
-                                anchorId={`tooltip-${row._id}`}
-                                place="top"
-                                content={
-                                    <div>
-                                        <div>
-                                            <strong>Created At:</strong> {new Date(row.createdAt).toLocaleString()}
-                                        </div>
-                                        <div>
-                                            <strong>Updated At:</strong> {new Date(row.updatedAt).toLocaleString()}
-                                        </div>
-                                    </div>
-                                }
-                            /> */}
-        </div>
-      ),
-    },
-  ];
-
-  const handleContactCloseToggle = async (contact) => {
-    setIsLoading(false);
-    const data = {
-      name: contact.name,
-      phone: contact.phone,
-      email: contact.email,
-      message: contact.message,
-      pageName: contact.pageName,
-      companyName: contact.companyName,
-      websiteUrl: contact.websiteUrl,
-      isContactClose: !contact.isContactClose,
-      showForAll: contact.showForAll,
-    };
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/${selectCountry}/contacts/updateContact/${contact._id}`,
-        data,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      if (response.status === 200) {
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error updating contact:", error);
-      toast.error("Failed to update contact.");
-    }
-  };
-
-  const handleShowForAllToggle = async (contact) => {
-    setIsLoading(false);
-    const data = {
-      name: contact.name,
-      phone: contact.phone,
-      email: contact.email,
-      message: contact.message,
-      pageName: contact.pageName,
-      companyName: contact.companyName,
-      websiteUrl: contact.websiteUrl,
-      isContactClose: contact.isContactClose,
-      showForAll: !contact.showForAll,
-    };
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/${selectCountry}/contacts/updateContact/${contact._id}`,
-        data,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      if (response.status === 200) {
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error updating contact:", error);
-      toast.error("Failed to update contact.");
-    }
+  const closeSubServiceModel = () => {
+    setsubService(null);
   };
 
   const customStyles = {
@@ -507,130 +166,36 @@ const Package = () => {
     },
   };
 
-  const filteredContacts = contacts.filter(
-    (contact) =>
-      contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.message?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.websiteUrl?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contact.pageName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const addOrUpdateStatus = async () => {
-    setEditStatusLoading(true);
-    if (!newStatus.trim()) {
-      setEditStatusLoading(false);
-      return toast.error("Status cannot be empty.");
-    }
-    // const updatedStatuses = [...customStatuses];
-    if (editingStatus) {
-      const endpoint = `${API_BASE_URL}/statuses/updateStatus/${editingStatus._id}`;
-      const response = await axios.post(
-        endpoint,
-        { name: newStatus },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      toast.success("Status Edited successfully.");
-      setFollowStatus(response.data.status.name);
-      fetchStatuses();
-      closeStatusModal();
-    } else {
-      if (customStatuses.includes(newStatus)) {
-        toast.error("Status already exists.");
-        return;
-      }
-      const response = await axios.post(`${API_BASE_URL}/statuses/addStatus`, {
-        name: newStatus,
-      });
-      toast.success("Status added successfully.");
-      setFollowStatus(response.data.status.name);
-      fetchStatuses();
-      closeStatusModal();
-    }
-    // setCustomStatuses(updatedStatuses);
-    // closeModal();
-  };
-
-  const deleteStatus = async (id) => {
-    if (window.confirm("Are you sure you want to delete this Status?")) {
+  const handleDeleteClick = async (id) => {
+    if (window.confirm("Are you sure you want to delete this Package?")) {
       try {
-        setEditStatusLoading(true);
-        await axios.delete(`${API_BASE_URL}/statuses/deleteStatus/${id}`);
-        toast.success("status deleted successfully!");
-        setFollowStatus("");
-        fetchStatuses();
-        closeStatusModal();
+        setIsLoading(true);
+        await axios.delete(
+          `${API_BASE_URL}/${selectCountry}/packages/deletePackage/${id}`
+        );
+        toast.success("Packages deleted successfully!");
+        fetchData();
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error deleting status:", error);
-        toast.error("Failed to delete status.");
+        console.error("Error deleting Packages:", error);
+        toast.error("Failed to delete Packages.");
       }
     }
   };
 
-  const openStatusModal = (status = null) => {
-    setEditingStatus(status);
-    setNewStatus(status ? status.name : "");
-    setIsStatusModalOpen(true);
-  };
-
-  const closeStatusModal = () => {
-    setIsStatusModalOpen(false);
-    setEditingStatus(null);
-    setNewStatus("");
-  };
-
-  const handleAddFollowUp = async () => {
-    setIsFollowUpLoading(true);
-
-    if (!followupMessage) {
-      setIsFollowUpLoading(false);
-      return toast.warn("Please fill out Follow Up Message");
-    }
-
-    const data = {
-      name: selectedContact.name,
-      phone: selectedContact.phone,
-      email: selectedContact.email, // May be null if no file is provided
-      message: selectedContact.message,
-      companyName: selectedContact.companyName,
-      websiteUrl: selectedContact.websiteUrl,
-      pageName: selectedContact.pageName,
-      isContactClose: selectedContact.isContactClose,
-      showForAll: selectedContact.showForAll,
-      followups: [
-        ...(selectedContact.followups || []), // Ensure followups is an array
-        { followStatus, followupMessage, updatedDate: new Date() },
-      ],
-    };
-
-    try {
-      const endpoint = `${API_BASE_URL}/${selectCountry}/contacts/updateContact/${selectedContact._id}`;
-
-      const response = await axios.post(endpoint, data, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      toast.success("Follwup added successfully!");
-
-      fetchData();
-      setSelectedContact(response.data.contact);
-      setFollowStatus("Pending");
-      setFollowupMessage("");
-      setIsFollowUpLoading(false);
-    } catch (error) {
-      console.error("Error uploading Follwup:", error);
-      toast.error("Failed to upload Follwup.");
-    } finally {
-    }
-  };
+  // const openSubServiceModal = useCallback(
+  //   (parentId) => {
+  //     setsubService(true);
+  //     setFilteredSubServiceList(
+  //       filteredPackageList.filter((service) => service.parentId === parentId)
+  //     );
+  //   },
+  //   [filteredPackageList]
+  // );
 
   return (
     <>
-      {isLoading || isStatusLoading ? (
+      {isLoading ? (
         <div className="w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg">
           <i className="loader" />
         </div>
@@ -645,7 +210,7 @@ const Package = () => {
                 </label>
                 <input
                   id="search-FAQ"
-                  value={searchQuery}
+                  // value={searchQuery}
                   onChange={(e) => {
                     fetchSearchData(e.target.value);
                   }}
@@ -666,102 +231,59 @@ const Package = () => {
               <div
                 className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}
               >
-                {/* <DataTable
-                            columns={contactColumns}
-                            data={filteredContacts}
-                            pagination
-                            highlightOnHover
-                            pointerOnHover
-                            // striped
-                            customStyles={customStyles}
-                        /> */}
-
-                {filteredContactsList.map((contact) => (
+                {filteredPackageList.map((packages) => (
                   <div
-                    key={contact._id}
+                    key={packages._id}
                     className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3"
                   >
-                    {/* <div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Id</span>
-                                                                                        <span className="text-sm">{contact._id.slice(-4)}</span>
-                                                                                    </div> */}
                     <div className="flex items-center gap-1">
-                      <span className="font-semibold text-sm">Name</span>
-                      <span className="text-sm">{contact.name}</span>
+                      <span className="font-semibold text-sm">Package</span>
+                      <span className="text-sm">{packages.packageName}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="font-semibold text-sm">Email</span>
-                      <span className="text-sm">{contact.email}</span>
+                      <span className="font-semibold text-sm">Services</span>
+                      <span className="text-sm">{packages.services}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="font-semibold text-sm">Phone No:</span>
-                      <span className="text-sm">{contact.phone}</span>
+                      <span className="font-semibold text-sm">
+                        No. Of Pages
+                      </span>
+                      <span className="text-sm">{packages.noOfPages}</span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="font-semibold text-sm">Message</span>
-                      <span className="text-sm">{contact.message}</span>
-                    </div>
-                    {selectCountry === "canada" && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold text-sm">
-                          Inquiry About
-                        </span>
-                        <span className="text-sm">{contact.pageName}</span>
-                      </div>
-                    )}
-                    {selectCountry === "canada" && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold text-sm">
-                          Company Name
-                        </span>
-                        <span className="text-sm">
-                          {contact.companyName
-                            ? contact.companyName
-                            : contact.websiteUrl}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="checkbox"
-                        checked={contact.isContactClose}
-                        className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        onChange={() => handleContactCloseToggle(contact)}
-                      />
                       <span className="font-semibold text-sm">
-                        Contact Close
+                        Domestic Price
+                      </span>
+                      <span className="text-sm">{packages.domesticPrice}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-semibold text-sm">Duratation</span>
+                      <span className="text-sm">{packages.duration}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-semibold text-sm">
+                        Locking Period
+                      </span>
+                      <span className="text-sm">{packages.lockingPeriod}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-semibold text-sm">
+                        International Price
+                      </span>
+                      <span className="text-sm">
+                        {packages.internationalPrice}
                       </span>
                     </div>
-
-                    {selectCountry === "canada" && role === "India" && (
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="checkbox"
-                          checked={contact.showForAll}
-                          className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                          onChange={() => handleShowForAllToggle(contact)}
-                        />
-                        <span className="font-semibold text-sm">
-                          Show For All
-                        </span>
-                      </div>
-                    )}
-
                     <div className="flex flex-col gap-1">
-                      <button
-                        className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
-                        onClick={() => handleShowFollowups(contact)}
-                      >
-                        Follow-Up
-                      </button>
+                      <span className="font-semibold text-sm">Note</span>
+                      <span className="text-sm">{packages.note}</span>
                     </div>
+
                     <div className="flex absolute top-2.5 right-2 gap-2">
-                      <button onClick={() => openModal(contact)}>
+                      <button onClick={() => openModal(packages)}>
                         <EditIcon width={16} height={16} fill={"#444050"} />
                       </button>
-
-                      <button onClick={() => handleDeleteClick(users._id)}>
+                      <button onClick={() => handleDeleteClick(packages._id)}>
                         <MdOutlineDelete size={23} fill="#F05F23" />
                       </button>
                     </div>
@@ -788,12 +310,12 @@ const Package = () => {
             <Modal
               isOpen={isAddEditModalOpen}
               onRequestClose={closeAddEditModal}
-              contentLabel="Contact Modal"
+              contentLabel="Packages Modal"
               className="w-full max-w-[500px] max-h-[96vh] overflow-auto bg-cardBg z-50 m-4 p-6 rounded-2xl flex flex-col gap-4"
               overlayClassName="overlay"
             >
               <h2 className="text-xl font-bold text-accent">
-                {editingContact ? "Edit Contact" : "Add Contact"}
+                {editingPackage ? "Edit Package" : "Add Package"}
               </h2>
               <div className="flex flex-col gap-1">
                 <label
@@ -813,137 +335,62 @@ const Package = () => {
               </div>
               <div className="flex flex-col gap-1">
                 <label
-                  htmlFor="email"
+                  htmlFor="services"
                   className="block text-sm font-semibold required"
                 >
-                  Email
+                  Services
                 </label>
                 <input
-                  id="email"
+                  id="services"
                   type="text"
-                  value={email}
+                  value={services}
                   placeholder="Enter Email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setServices(e.target.value)}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>
-
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="phone"
                   className="block text-sm font-semibold required"
                 >
-                  Phone No:
+                  No Of Pages:
                 </label>
                 <input
                   id="phone"
                   type="text"
-                  value={phone}
-                  placeholder="Enter Phone No:"
+                  value={noOfPages}
+                  placeholder="Enter No. Of Pages No:"
                   onChange={(e) => setPhone(e.target.value)}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>
-
               <div className="flex flex-col gap-1">
                 <label
-                  htmlFor="message"
+                  htmlFor="domesticPrice"
                   className="block text-sm font-semibold "
                 >
-                  Message
+                  Domestic Price
                 </label>
                 <textarea
-                  id="message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Enter Message"
+                  id="domesticPrice"
+                  value={domesticPrice}
+                  onChange={(e) => setDomesticPrice(e.target.value)}
+                  placeholder="Enter Domestic Price"
                   style={{ minHeight: "100px" }}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>
-
-              {selectCountry === "canada" && (
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="pageName"
-                    className="block text-sm font-semibold"
-                  >
-                    Select Lead
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <select
-                      name="pageName"
-                      value={pageName}
-                      onChange={(e) => {
-                        setPageName(e.target.value);
-                      }}
-                      className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                      required
-                    >
-                      <option disabled value="">
-                        Select Lead
-                      </option>
-                      {pages.map((page, index) => (
-                        <option key={index} value={page}>
-                          {page}
-                        </option>
-                      ))}
-                    </select>
-                    {/* <button onClick={(e) => openStateModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                    <FaPlus size={18} fill="#2dafbe" />
-                                </button> */}
-                  </div>
-                </div>
-              )}
-
-              {selectCountry === "canada" && pageName != "seo" && (
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="companyName"
-                    className="block text-sm font-semibold "
-                  >
-                    Company Name
-                  </label>
-                  <input
-                    id="companyName"
-                    type="text"
-                    value={companyName}
-                    placeholder="Enter Company Name"
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                  />
-                </div>
-              )}
-
-              {selectCountry === "canada" && pageName === "seo" && (
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="websiteUrl"
-                    className="block text-sm font-semibold "
-                  >
-                    Website Url
-                  </label>
-                  <input
-                    id="websiteUrl"
-                    type="text"
-                    value={websiteUrl}
-                    placeholder="Enter Website Url"
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                  />
-                </div>
-              )}
-
               <div className="grid grid-cols-2 gap-3 m-x-4 w-full">
                 <button
                   onClick={handleSubmit}
                   className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
-                    editingContact
+                    editingPackage
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {editingContact ? "Update Contact" : "Add Contact"}
+                  {editingPackage ? "Update Contact" : "Add Contact"}
                 </button>
                 <button
                   onClick={closeAddEditModal}
@@ -952,238 +399,6 @@ const Package = () => {
                   Cancel
                 </button>
               </div>
-            </Modal>
-
-            <Modal
-              isOpen={isModalOpen}
-              onRequestClose={closeModal}
-              contentLabel="Follow-Ups Modal"
-              className="bg-white  p-6 rounded-lg shadow-lg max-w-lg w-full relative max-h-[95vh] overflow-y-auto"
-              overlayClassName="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50"
-            >
-              <div className="flex items-center justify-between w-full border-b-2 pb-4">
-                <h3 className="text-xl font-bold text-accent">Follow-Ups</h3>
-                <button
-                  onClick={closeModal}
-                  className="icon-lg flex items-center justify-center rounded-full bg-accent"
-                >
-                  <FaPlus className="rotate-45 text-mainBg" size={22} />
-                </button>
-              </div>
-              {isFollowUpLoading ? (
-                <div className="w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg">
-                  <i className="loader" />
-                </div>
-              ) : (
-                <>
-                  {selectedContact.isContactClose ? (
-                    <div className="flex flex-col gap-2 mt-2">
-                      {" "}
-                      <p>This Contact Is Closed.</p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex flex-col gap-2 mt-2">
-                        {editStatusLoading ? (
-                          <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                            <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-2">
-                            <label
-                              className="text-sm font-semibold"
-                              htmlFor="followStatus"
-                            >
-                              Status
-                            </label>
-                            <div className="flex items-center gap-2 relative w-full overflow-visible">
-                              <Listbox
-                                className="w-full"
-                                value={followStatus}
-                                onChange={setFollowStatus}
-                              >
-                                <div className="relative ">
-                                  <ListboxButton
-                                    id="category"
-                                    className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                                    aria-expanded="true"
-                                  >
-                                    <span className="flex items-center">
-                                      {followStatus}
-                                    </span>
-                                  </ListboxButton>
-
-                                  <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    {customStatuses?.map((status) => (
-                                      <ListboxOption
-                                        key={status._id}
-                                        value={status.name}
-                                        className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 data-[focus]:bg-lightRed data-[focus]:text-white"
-                                      >
-                                        <div className="flex items-center justify-between">
-                                          {status.name}
-                                          {status.name === "Pending" ||
-                                          status.name === "Cancelled" ? null : (
-                                            <div className="flex items-center gap-1">
-                                              <button
-                                                onClick={() =>
-                                                  openStatusModal(status)
-                                                }
-                                              >
-                                                <EditIcon
-                                                  width={15}
-                                                  height={15}
-                                                  fill={"#000"}
-                                                />
-                                              </button>
-                                              <button
-                                                onClick={() =>
-                                                  deleteStatus(status._id)
-                                                }
-                                              >
-                                                <MdOutlineDelete
-                                                  size={17}
-                                                  fill="#000"
-                                                />
-                                              </button>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </ListboxOption>
-                                    ))}
-                                  </ListboxOptions>
-                                </div>
-                              </Listbox>
-                              <button
-                                onClick={() => openStatusModal()}
-                                className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray"
-                              >
-                                <FaPlus size={18} fill="#C03A03" />
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                        <div className="flex flex-col gap-2">
-                          <label
-                            className="text-sm font-semibold required"
-                            htmlFor="followupMessage"
-                          >
-                            Follow Up Message
-                          </label>
-                          <input
-                            id="followupMessage"
-                            type="text"
-                            value={followupMessage}
-                            placeholder="Enter Follow Up Message"
-                            onChange={(e) => setFollowupMessage(e.target.value)}
-                            className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-2 mt-4 mb-2">
-                        <button
-                          onClick={() => handleAddFollowUp()}
-                          className="bg-accent hover:bg-accent/70 w-50 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-                        >
-                          Add Follow Up
-                        </button>
-                      </div>
-                    </>
-                  )}
-
-                  <div className=" mt-2">
-                    {selectedContact.followups &&
-                    selectedContact.followups.length > 0 ? (
-                      selectedContact.followups
-                        .slice()
-                        .reverse()
-                        .map((followup, index) => (
-                          <div
-                            key={index}
-                            className="border-b-2 flex flex-col gap-2 py-4"
-                          >
-                            <p>
-                              <strong>Updated At:</strong>{" "}
-                              {new Date(followup.updatedDate).toLocaleString()}
-                            </p>
-                            <p>
-                              <strong>Status:</strong>{" "}
-                              <span className="text-accent font-semibold">
-                                {followup.followStatus}
-                              </span>
-                            </p>
-                            <p>
-                              <strong>Message:</strong>{" "}
-                              {followup.followupMessage}
-                            </p>
-                          </div>
-                        ))
-                    ) : (
-                      <p>No follow-ups available.</p>
-                    )}
-                  </div>
-                </>
-              )}
-              {/* <button
-                            className="mt-4 bg-accent text-white px-4 py-2 rounded-lg"
-                            onClick={closeModal}
-                        >
-                            Close
-                        </button> */}
-              {/* <button onClick={closeModal} className="absolute top-4 right-4 icon-lg flex items-center justify-center rounded-full bg-accent">
-                            <FaPlus className="rotate-45 text-mainBg" size={22} />
-                        </button> */}
-            </Modal>
-
-            <Modal
-              isOpen={isStatusModalOpen}
-              onRequestClose={closeStatusModal}
-              className="flex flex-col gap-6 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative"
-              overlayClassName="overlay"
-            >
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-bold">
-                  {editingStatus ? "Update Status" : "Add Status"}
-                </h2>
-                <button
-                  onClick={closeStatusModal}
-                  className="icon-lg flex items-center justify-center rounded-full bg-accent"
-                >
-                  <FaPlus className="rotate-45 text-mainBg" size={22} />
-                </button>
-              </div>
-              {editStatusLoading ? (
-                <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                  <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
-                </div>
-              ) : (
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <div className="w-full sm:w-full flex-1">
-                    <input
-                      type="text"
-                      placeholder="Enter status"
-                      value={newStatus}
-                      onChange={(e) => setNewStatus(e.target.value)}
-                      className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                    />
-                  </div>
-                  <div className="w-full sm:w-fit flex gap-2">
-                    <button
-                      onClick={addOrUpdateStatus}
-                      className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                    >
-                      {editingStatus ? "Update Status" : "Add Status"}
-                    </button>
-                    <button
-                      onClick={closeStatusModal}
-                      className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
             </Modal>
           </div>
         </>

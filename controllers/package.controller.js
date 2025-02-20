@@ -30,6 +30,8 @@ export const getPackages = async (req, res) => {
       const region = req.baseUrl.includes("/canada") ? "canada" : "india";
       const Package = getPackageModel(region);
         const packages = await Package.find();
+        console.log("packages",packages);
+        
         if (!packages) {
           return res.status(404).json({ message: "No packages found", success: false });
         }

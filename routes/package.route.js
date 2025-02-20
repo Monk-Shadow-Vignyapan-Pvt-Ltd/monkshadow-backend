@@ -10,7 +10,6 @@ import isAuthenticated from "../auth/isAuthenticated.js";
 import { singleUpload } from "../middleware/multer.js";
 
 const router = express.Router();
-
 router.route("/addPackage_").post(addPackage_);
 router.route("/getPackages").get(getPackages);
 router.route("/updatePackage/:id").post(updatePackage);

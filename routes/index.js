@@ -12,8 +12,8 @@ const routes = {
   statusRoute,
   careerRoute,
   careerFormRoute,
-  packageRoute,
   serviceRoute,
+  packageRoute,
 };
 
 export default routes;
