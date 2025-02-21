@@ -72,7 +72,7 @@ export const updatePackage = async (req, res) => {
     const { id } = req.params;
     const { packageName, services, noOfPages, lockingPeriod,domesticPrice, internationalPrice,duration, note } = req.body;
 
-    const updatedData = { packageName, services, noOfPages, message,lockingPeriod,domesticPrice,internationalPrice,duration,note};
+    const updatedData = { packageName, services, noOfPages,lockingPeriod,domesticPrice,internationalPrice,duration,note};
 
     const package_ = await Package.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
 
@@ -120,7 +120,6 @@ export const searchPackages = async (req, res) => {
                 { packageName: regex },
                 { services: regex },
                 { noOfPages: regex },
-                { message: regex },
                 { lockingPeriod: regex },
                 { domesticPrice: regex },
                 { internationalPrice: regex },
