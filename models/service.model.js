@@ -15,7 +15,7 @@ const serviceSchema = new mongoose.Schema(
 // Dynamic model getter function
 const getServiceModel = (region) => {
   const collectionName =
-    region === "canada" ? "canada_packages" : "india_packages";
+    region === "canada" ? "canada_services" : "india_services";
   return (
     mongoose.models[collectionName] ||
     mongoose.model(collectionName, serviceSchema, collectionName)

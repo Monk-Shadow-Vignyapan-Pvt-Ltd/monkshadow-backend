@@ -130,8 +130,8 @@ const Package = () => {
 
   const openModal = (packages = null) => {
     setEditingPackage(packages);
-    setPackageName(packages ? packages.serviceName : "");
-    setServices(packages ? packages.setServices : "");
+    setPackageName(packages ? packages.packageName : "");
+    setServices(packages ? packages.services : "");
     setNoOfPages(packages ? packages.parentId : "");
     setDomesticPrice(packages ? packages.domesticPrice : "");
     setnote(packages ? packages.note : "");

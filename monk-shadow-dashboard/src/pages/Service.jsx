@@ -31,7 +31,7 @@ const Service = () => {
   // const [addOnIs, setAddOnIs] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [editingService, setEditingService] = useState(null);
+  const [editingPackage, setEditingPackage] = useState(null);
   const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
   const { selectCountry } = useRoles();
   const [totalPages, setTotalPages] = useState(0);
@@ -91,8 +91,8 @@ const Service = () => {
     console.log(isAddOn);
 
     try {
-      const endpoint = editingService
-        ? `${API_BASE_URL}/${selectCountry}/service/updateService/${editingService._id}`
+      const endpoint = editingPackage
+        ? `${API_BASE_URL}/${selectCountry}/service/updateService/${editingPackage._id}`
         : `${API_BASE_URL}/${selectCountry}/service/addService`;
 
       await axios.post(endpoint, data, {
@@ -100,7 +100,7 @@ const Service = () => {
       });
 
       toast.success(
-        editingService
+        editingPackage
           ? "Service updated successfully!"
           : "Service added successfully!"
       );
@@ -124,7 +124,7 @@ const Service = () => {
   };
 
   const openModal = (services = null) => {
-    setEditingService(services);
+    setEditingPackage(services);
     setServiceName(services ? services.serviceName : "");
     setDescription(services ? services.description : "");
     setParentId(services ? services.parentId : "");
@@ -135,7 +135,7 @@ const Service = () => {
 
   const closeAddEditModal = () => {
     setIsAddEditModalOpen(false);
-    setEditingService(null);
+    setEditingPackage(null);
   };
   const closeSubServiceModel = () => {
     setsubService(null);
@@ -183,6 +183,9 @@ const Service = () => {
     },
     [filteredserviceList]
   ); // Only re-create the function when `filteredserviceList` changes
+
+console.log("service Name:",serviceName);
+
 
   return (
     <>
@@ -320,7 +323,7 @@ const Service = () => {
                               openSubServiceModal(service.serviceName)
                             }
                           >
-                            View Sub Serice
+                            View Sub Service
                           </button>
                         </div>
                         <div className="flex absolute top-2.5 right-2 gap-2">
@@ -363,7 +366,7 @@ const Service = () => {
               overlayClassName="overlay"
             >
               <h2 className="text-xl font-bold text-accent">
-                {editingService ? "Edit Service" : "Add Service"}
+                {editingPackage ? "Edit Service" : "Add Service"}
               </h2>
               <div className="flex flex-col gap-1">
                 <label
@@ -500,12 +503,12 @@ const Service = () => {
                 <button
                   onClick={handleSubmit}
                   className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
-                    editingService
+                    editingPackage
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {editingService ? "Update Service" : "Add Service"}
+                  {editingPackage ? "Update Service" : "Add Service"}
                 </button>
                 <button
                   onClick={closeAddEditModal}
@@ -546,12 +549,12 @@ const Service = () => {
                 <button
                   // onClick={handleSubmit}
                   className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
-                    editingService
+                    editingPackage
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {editingService ? "Update Service" : "Add Service"}
+                  {editingPackage ? "Update Service" : "Add Service"}
                 </button>
                 <button
                   onClick={() => setsubService(false)}
