@@ -97,7 +97,7 @@ const Package = () => {
 
     try {
       const endpoint = editingPackage
-        ? `${API_BASE_URL}/${selectCountry}/packages/getPackages/${editingPackage._id}`
+        ? `${API_BASE_URL}/${selectCountry}/packages/updatePackage/${editingPackage._id}`
         : `${API_BASE_URL}/${selectCountry}/packages/addPackage_`;
 
       await axios.post(endpoint, data, {
@@ -133,7 +133,7 @@ const Package = () => {
     setPackageName(packages ? packages.serviceName : "");
     setServices(packages ? packages.setServices : "");
     setNoOfPages(packages ? packages.parentId : "");
-    setDomesticPrice(packages ? packages.domesticPrice : false);
+    setDomesticPrice(packages ? packages.domesticPrice : "");
     setnote(packages ? packages.note : "");
     setduration(packages ? packages.duration : "");
     setLockingPeriod(packages ? packages.lockingPeriod : "");
@@ -319,17 +319,17 @@ const Package = () => {
               </h2>
               <div className="flex flex-col gap-1">
                 <label
-                  htmlFor="name"
+                  htmlFor="packageName"
                   className="block text-sm font-semibold required"
                 >
-                  Name
+                  Package name
                 </label>
                 <input
-                  id="name"
+                  id="packageName"
                   type="text"
-                  value={name}
-                  placeholder="Enter Name"
-                  onChange={(e) => setName(e.target.value)}
+                  value={packageName}
+                  placeholder="Enter Package Name"
+                  onChange={(e) => setPackageName(e.target.value)}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>
@@ -344,26 +344,29 @@ const Package = () => {
                   id="services"
                   type="text"
                   value={services}
-                  placeholder="Enter Email"
+                  placeholder="Enter Services"
                   onChange={(e) => setServices(e.target.value)}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label
-                  htmlFor="phone"
+                  htmlFor="noOfPage"
                   className="block text-sm font-semibold required"
                 >
                   No Of Pages:
                 </label>
-                <input
-                  id="phone"
+                <select
+                  id="noOfPage"
                   type="text"
-                  value={noOfPages}
                   placeholder="Enter No. Of Pages No:"
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setNoOfPages(e.target.value)}
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                />
+                >
+                  <option id="noOfPage" value={noOfPages}>0-10</option>
+                  <option id="noOfPage" value={noOfPages}>10-20</option>
+                  <option id="noOfPage" value={noOfPages}>15-30</option>
+                </select>
               </div>
               <div className="flex flex-col gap-1">
                 <label
@@ -372,12 +375,71 @@ const Package = () => {
                 >
                   Domestic Price
                 </label>
-                <textarea
+                <input
                   id="domesticPrice"
+                  type="number"
                   value={domesticPrice}
                   onChange={(e) => setDomesticPrice(e.target.value)}
                   placeholder="Enter Domestic Price"
-                  style={{ minHeight: "100px" }}
+                  className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="duration"
+                  className="block text-sm font-semibold "
+                >
+                  Duration
+                </label>
+                <input
+                  id="duration"
+                  value={duration}
+                  onChange={(e) => setduration(e.target.value)}
+                  placeholder="Enter Domestic Price"
+                  className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="lockingPeriod"
+                  className="block text-sm font-semibold "
+                >
+                  Locking Period
+                </label>
+                <input
+                  id="lockingPeriod"
+                  type="number"
+                  value={lockingPeriod}
+                  onChange={(e) => setLockingPeriod(e.target.value)}
+                  placeholder="Enter Locking Period"
+                  className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="internationalPrice"
+                  className="block text-sm font-semibold "
+                >
+                  International Price
+                </label>
+                <input
+                  id="internationalPrice"
+                  type="number"
+                  value={internationalPrice}
+                  onChange={(e) => setInternationalPrice(e.target.value)}
+                  placeholder="Enter Locking Period"
+                  className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="note" className="block text-sm font-semibold ">
+                  Note
+                </label>
+                <textarea
+                  id="note"
+                  value={note}
+                  onChange={(e) => setnote(e.target.value)}
+                  placeholder="Enter Locking Period"
                   className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                 />
               </div>

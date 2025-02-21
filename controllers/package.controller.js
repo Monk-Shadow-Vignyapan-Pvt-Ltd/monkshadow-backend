@@ -11,12 +11,14 @@ export const addPackage_ = async (req, res) => {
     if (!packageName || !services ) {
       return res.status(400).json({ message: "Please provide all required fields", success: false });
     }
+       
 
-    
-
+    console.log(packageName);
     // Create a new Package document
     const newPackage = new Package({ packageName, services, noOfPages, lockingPeriod,domesticPrice,internationalPrice,duration,note });
     await newPackage.save();
+
+    
 
     res.status(201).json({ message: "Package added successfully", package: newPackage, success: true });
   } catch (error) {
