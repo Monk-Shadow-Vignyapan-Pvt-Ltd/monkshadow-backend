@@ -117,7 +117,7 @@ const Billing = () => {
                                         {/* eslint-disable-next-line no-irregular-whitespace */}
                                         <span className="text-lg font-semibold text-primaryText">****   ****   ****   <span className="text-accent">7852</span></span>
                                     </div>
-                                    <EditIcon width={22} height={22} fill={"#f05f23"} />
+                                    <EditIcon width={22} height={22} fill={"#333333"} />
                                 </div>
                                 <div className="p-4 border-2 rounded-lg w-full flex items-center">
                                     <div className="w-full flex items-center gap-3">
@@ -125,7 +125,7 @@ const Billing = () => {
                                         {/* eslint-disable-next-line no-irregular-whitespace */}
                                         <span className="text-lg font-semibold text-primaryText">****   ****   ****   <span className="text-accent">7852</span></span>
                                     </div>
-                                    <EditIcon width={22} height={22} fill={"#f05f23"} />
+                                    <EditIcon width={22} height={22} fill={"#333333"} />
                                 </div>
                             </div>
                         </div>

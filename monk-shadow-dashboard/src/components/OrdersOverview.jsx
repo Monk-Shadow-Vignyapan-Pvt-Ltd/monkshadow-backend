@@ -21,10 +21,10 @@ const OrdersOverview = () => {
                 <div className="w-10 h-full flex justify-center py-4 relative">
                     <div className="border-2 rounded-full">
                         <div className="absolute top-[1%] w-full right-0 flex items-center justify-center bg-cardBg">
-                            <BellIcon width={24} height={24} fill="#F05F23" />
+                            <BellIcon width={24} height={24} fill="#333333" />
                         </div>
                         <div className="absolute top-[19.5%] w-full right-0 flex items-center justify-center bg-cardBg">
-                            <FragmentIcon width={24} height={24} fill="#F05F23" />
+                            <FragmentIcon width={24} height={24} fill="#333333" />
                         </div>
                         <div className="absolute top-[36%] w-full right-0 flex items-center justify-center bg-cardBg">
                             <CartIcon width={24} height={24} fill="#848484" />

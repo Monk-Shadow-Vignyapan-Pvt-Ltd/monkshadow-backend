@@ -17,7 +17,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, totalEntries, entri
                     className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     <div className="icon-lg flex items-center justify-center bg-mainBg rounded-lg -rotate-90">
-                        <WithStrokeUpArrow width={20} height={20} fill={"none"} stroke={"#F05F23"} />
+                        <WithStrokeUpArrow width={20} height={20} fill={"none"} stroke={"#333333"} />
                     </div>
                 </button>
                 {Array.from({ length: totalPages }, (_, index) => (
@@ -35,7 +35,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, totalEntries, entri
                     className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     <div className="icon-lg flex items-center justify-center bg-mainBg rounded-lg rotate-90">
-                        <WithStrokeUpArrow width={20} height={20} fill={"none"} stroke={"#F05F23"} />
+                        <WithStrokeUpArrow width={20} height={20} fill={"none"} stroke={"#333333"} />
                     </div>
                 </button>
             </div>

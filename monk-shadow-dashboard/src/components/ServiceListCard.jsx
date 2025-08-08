@@ -38,7 +38,7 @@ const ServiceListCard = () => {
                     </label>
                 </div>
                 <button><EditIcon width={20} height={20} fill={"#444050"} /></button>
-                <button><MdOutlineDelete size={24} fill='#F05F23' /></button>
+                <button><MdOutlineDelete size={24} fill='#333333' /></button>
             </div>
         </div>
     );

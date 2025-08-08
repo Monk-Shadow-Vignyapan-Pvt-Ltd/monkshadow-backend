@@ -26,7 +26,7 @@ class ApexChart extends React.Component {
                 },
                 stroke: {
                     curve: 'smooth',
-                    colors: ['#F05F23']
+                    colors: ['#333333']
                 },
                 xaxis: {
                     labels: {
@@ -60,7 +60,7 @@ class ApexChart extends React.Component {
                         colorStops: [
                             {
                                 offset: 0,
-                                color: '#F05F23', // Start color (your custom color)
+                                color: '#333333', // Start color (your custom color)
                                 opacity: 1
                             },
                             {

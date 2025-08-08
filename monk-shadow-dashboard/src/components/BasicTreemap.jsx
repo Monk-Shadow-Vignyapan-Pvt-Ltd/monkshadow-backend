@@ -35,7 +35,7 @@ class TreemapChart extends React.Component {
                 legend: {
                     show: false
                 },
-                colors: ['#F05F23'], // Base color for the treemap
+                colors: ['#333333'], // Base color for the treemap
                 plotOptions: {
                     treemap: {
                         shadeIntensity: 0.5, // Adjust for lighter/darker shades

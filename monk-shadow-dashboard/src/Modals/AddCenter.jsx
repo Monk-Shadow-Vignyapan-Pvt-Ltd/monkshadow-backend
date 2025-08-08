@@ -308,7 +308,7 @@ const AddCenter = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew, statesL
                                                     ))}
                                                 </select>
                                                 <button onClick={(e) => openStateModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                    <FaPlus size={18} fill="#F05F23" />
+                                                    <FaPlus size={18} fill="#333333" />
                                                 </button>
                                             </div>
                                         </div>
@@ -335,7 +335,7 @@ const AddCenter = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew, statesL
                                                     ))}
                                                 </select>
                                                 <button onClick={(e) => openCityModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                    <FaPlus size={18} fill="#F05F23" />
+                                                    <FaPlus size={18} fill="#333333" />
                                                 </button>
                                             </div>
                                         </div>

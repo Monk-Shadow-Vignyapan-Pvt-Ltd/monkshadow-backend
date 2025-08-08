@@ -1144,7 +1144,7 @@ const UpdatePatient = ({ isModalOpen, setIsModalOpen, patientId, currentAppointm
                                                                 }}
                                                             />
                                                             <button onClick={() => openProcedureModal()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                                <FaPlus size={18} fill="#F05F23" />
+                                                                <FaPlus size={18} fill="#333333" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -1392,7 +1392,7 @@ const UpdatePatient = ({ isModalOpen, setIsModalOpen, patientId, currentAppointm
                                                                         {instructions.map((modulepoint) => (
                                                                             <div key={modulepoint.id} className="flex flex-col relative gap-3 p-3 border-2 rounded-lg">
                                                                                 <button onClick={() => removeModulepoint(modulepoint.id)} className="absolute top-2  right-2">
-                                                                                    <FaPlus className="rotate-45" size={18} fill={"#f05f23"} />
+                                                                                    <FaPlus className="rotate-45" size={18} fill={"#333333"} />
                                                                                 </button>
                                                                                 <div className="w-full flex mt-4  gap-1.5">
 
@@ -1465,7 +1465,7 @@ const UpdatePatient = ({ isModalOpen, setIsModalOpen, patientId, currentAppointm
                                                                             </div>
                                                                         ))}
                                                                         <div onClick={addNewModulepoint} className="flex relative gap-2 items-center justify-center p-3 border-2 border-dashed rounded-lg cursor-pointer">
-                                                                            <FaPlus size={18} fill={"#f05f23"} />
+                                                                            <FaPlus size={18} fill={"#333333"} />
                                                                             <span className="text-accent font-semibold">Add New Instruction</span>
                                                                         </div>
                                                                     </div>

@@ -273,7 +273,7 @@ console.log("service Name:",serviceName);
                           <button
                             onClick={() => handleDeleteClick(service._id)}
                           >
-                            <MdOutlineDelete size={23} fill="#F05F23" />
+                            <MdOutlineDelete size={23} fill="#333333" />
                           </button>
                         </div>
                       </div>
@@ -333,7 +333,7 @@ console.log("service Name:",serviceName);
                           <button
                             onClick={() => handleDeleteClick(service._id)}
                           >
-                            <MdOutlineDelete size={23} fill="#F05F23" />
+                            <MdOutlineDelete size={23} fill="#333333" />
                           </button>
                         </div>
                       </div>

@@ -511,7 +511,7 @@ const EditPatient = ({ isModalOpen, setIsModalOpen, patientDetail,setPatientDeta
                                                     ))}
                                                 </select>
                                                 <button onClick={(e) => openStateModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                    <FaPlus size={18} fill="#F05F23" />
+                                                    <FaPlus size={18} fill="#333333" />
                                                 </button>
                                             </div>
                                             <label htmlFor="name" className="block text-sm font-semibold required">
@@ -537,7 +537,7 @@ const EditPatient = ({ isModalOpen, setIsModalOpen, patientDetail,setPatientDeta
                                                     ))}
                                                 </select>
                                                 <button onClick={(e) => openCityModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                    <FaPlus size={18} fill="#F05F23" />
+                                                    <FaPlus size={18} fill="#333333" />
                                                 </button>
                                             </div>
                                         </>}

@@ -548,7 +548,7 @@ const AddDoctor = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew }) => {
 													))}
 												</select>
 												<button onClick={(e) => openCenterModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-													<FaPlus size={18} fill="#F05F23" />
+													<FaPlus size={18} fill="#333333" />
 												</button>
 											</div>
 
@@ -582,7 +582,7 @@ const AddDoctor = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew }) => {
 														))}
 													</select>
 													<button onClick={(e) => openStateModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-														<FaPlus size={18} fill="#F05F23" />
+														<FaPlus size={18} fill="#333333" />
 													</button>
 												</div>
 											</div>
@@ -612,7 +612,7 @@ const AddDoctor = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew }) => {
 														))}
 													</select>
 													<button onClick={(e) => openCityModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-														<FaPlus size={18} fill="#F05F23" />
+														<FaPlus size={18} fill="#333333" />
 													</button>
 												</div>
 											</div>

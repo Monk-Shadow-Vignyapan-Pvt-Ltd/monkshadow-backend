@@ -61,7 +61,7 @@ const InvoiceTable = ({ data }) => {
                                     <td className="h-full text-md py-4">{row.price}</td>
                                     <td className="h-full text-md py-4">
                                         {row.pdf === "true" ? (
-                                            <DownloadIcon width={26} height={26} fill={"#f05f23"} />
+                                            <DownloadIcon width={26} height={26} fill={"#333333"} />
                                         ) : (
                                             "No Invoice"
                                         )}

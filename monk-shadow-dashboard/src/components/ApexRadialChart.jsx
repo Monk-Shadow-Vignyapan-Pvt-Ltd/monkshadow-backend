@@ -69,7 +69,7 @@ class ApexRadialChart extends React.Component {
                         shade: 'dark', // You can set this to 'light' if preferred
                         type: 'horizontal',
                         shadeIntensity: 0.5,
-                        gradientToColors: ['#f05f23'], // Keep the red color for the end of the gradient
+                        gradientToColors: ['#333333'], // Keep the red color for the end of the gradient
                         inverseColors: false,
                         opacityFrom: 1, // Fully opaque blue
                         opacityTo: 1, // Fully opaque red
@@ -77,12 +77,12 @@ class ApexRadialChart extends React.Component {
                         colorStops: [
                             {
                                 offset: 0,
-                                color: '#f05f23',
+                                color: '#333333',
                                 opacity: 1
                             },
                             {
                                 offset: 100,
-                                color: '#f05f23',
+                                color: '#333333',
                                 opacity: 1
                             }
                         ]

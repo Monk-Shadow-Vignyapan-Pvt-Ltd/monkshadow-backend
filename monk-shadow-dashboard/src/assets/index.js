@@ -13,7 +13,6 @@ import ireland from "./ireland.png";
 import loginImg from "./login-img.svg";
 import cardImg from "./card-img.png";
 import visa from "./visa.svg";
-import pinkalBlackLogo from "./logo/text-logo.webp";
 import NoDataFoundImg from "./No-Data-Found-Img.svg";
 
 export {
@@ -32,6 +31,5 @@ export {
   loginImg,
   cardImg,
   visa,
-  pinkalBlackLogo,
   NoDataFoundImg
 };

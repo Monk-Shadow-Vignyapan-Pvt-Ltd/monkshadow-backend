@@ -636,13 +636,13 @@ const Home = () => {
 
                     <div className="flex border-b border-gray-200">
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent  border-accent' : 'text-gray-500 border-transparent'}`}
+                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent  border-[#f05f23]' : 'text-gray-500 border-transparent'}`}
                             onClick={() => setActiveTab('pending')}
                         >
                             Contact Pending ({filteredContactsList.filter(c => !c.isContactClose).length})
                         </button>
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent  border-accent' : 'text-gray-500 border-transparent'} `}
+                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent  border-[#f05f23]' : 'text-gray-500 border-transparent'} `}
                             onClick={() => setActiveTab('closed')}
                         >
                             Contact Closed ({filteredContactsList.filter(c => c.isContactClose).length})
@@ -719,7 +719,7 @@ const Home = () => {
                                             </button>
 
                                             <button onClick={() => handleDeleteClick(contact._id)}>
-                                                <MdOutlineDelete size={23} fill='#F05F23' />
+                                                <MdOutlineDelete size={23} fill='#ff0000' />
                                             </button>
                                         </div>
                                     </div>

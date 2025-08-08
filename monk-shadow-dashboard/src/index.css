@@ -31,7 +31,7 @@
 :root {
   --mainBg: #f8f7fa;
   --cardBg: #ffffff;
-  --accent: #F05F23;
+  --accent: #333333;
   --lightAccent: #fcddd0;
   --primaryText: #444050;
   --secondaryText: #848484;
@@ -39,7 +39,7 @@
   --placeHolder: #e1e1e1;
   --safeGreen: #00a329;
   --lightGreen: #a8f0c6;
-  --dangerRed: #F05F23;
+  --dangerRed: #333333;
   --lightRed: #ff787a;
   --border: #bebebe;
   --menuActive: "#EFEEF0";
@@ -119,11 +119,11 @@ h5 {
 }
 
 .khyxJj {
-  color: #F05F23 !important;
+  color: #333333 !important;
 }
 
 .btnLinear {
-  background: linear-gradient(90deg, #d3744c 0%, #F05F23 100%);
+  background: linear-gradient(90deg, #343434 0%, #333333 100%);
   background-size: 200%;
   /* Double the background width for smooth movement */
   background-position: 0%;
@@ -169,7 +169,7 @@ h5 {
 
 .icon-style {
   g {
-    fill: #F05F23;
+    fill: #333333;
   }
 
   transition: 2s;
@@ -183,7 +183,7 @@ h5 {
 
 .icon-style:hover {
   path {
-    fill: #F05F23;
+    fill: #333333;
   }
 }
 
@@ -536,7 +536,7 @@ input[type="number"] {
 .rbc-toolbar button:active,
 .rbc-toolbar button.rbc-active {
   box-shadow: none !important;
-  background-color: #F05F2352 !important;
+  background-color: #33333352 !important;
   border: 0 !important;
 }
 

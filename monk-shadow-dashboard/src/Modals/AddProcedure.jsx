@@ -223,7 +223,7 @@ const AddProcedure = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew }) =>
                                                         What to do
                                                     </h2>
                                                     <button onClick={() => removeModulepoint(modulepoint.id)}>
-                                                        <FaPlus className="rotate-45" size={18} fill={"#f05f23"} />
+                                                        <FaPlus className="rotate-45" size={18} fill={"#333333"} />
                                                     </button>
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-3">
@@ -297,7 +297,7 @@ const AddProcedure = ({ isModalOpen, setIsModalOpen, isAddNew, setIsAddNew }) =>
                                             </div>
                                         ))}
                                         <div onClick={addNewModulepoint} className="flex relative gap-2 items-center justify-center p-3 border-2 border-dashed rounded-lg cursor-pointer">
-                                            <FaPlus size={18} fill={"#f05f23"} />
+                                            <FaPlus size={18} fill={"#333333"} />
                                             <span className="text-md text-accent font-semibold">Add New Instruction</span>
                                         </div>
                                     </div>

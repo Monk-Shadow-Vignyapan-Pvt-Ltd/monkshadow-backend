@@ -284,7 +284,7 @@ const Package = () => {
                         <EditIcon width={16} height={16} fill={"#444050"} />
                       </button>
                       <button onClick={() => handleDeleteClick(packages._id)}>
-                        <MdOutlineDelete size={23} fill="#F05F23" />
+                        <MdOutlineDelete size={23} fill="#333333" />
                       </button>
                     </div>
                   </div>

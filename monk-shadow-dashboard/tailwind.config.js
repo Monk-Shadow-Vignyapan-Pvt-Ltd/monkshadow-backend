@@ -41,8 +41,8 @@ export default {
       colors: {
         mainBg: "#F8F7FA",
         cardBg: "#ffffff",
-        accent: "#F05F23",
-        lightAccent: "#F05F23",
+        accent: "#333333",
+        lightAccent: "#333333",
         darkAccent: "#C03A03",
         primaryText: "#444050",
         secondaryText: "#848484",
