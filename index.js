@@ -41,9 +41,20 @@ app.use("/api/v1/canada/service", routes.serviceRoute);
 app.use("/api/v1/canada/packages", routes.packageRoute);
 
 app.use("/api/v1/india/contacts", routes.contactRoute);
+app.use("/api/v1/india/careerForms", routes.careerFormRoute);
 app.use("/api/v1/india/careers", routes.careerRoute);
 app.use("/api/v1/india/service", routes.serviceRoute);
 app.use("/api/v1/india/packages", routes.packageRoute);
+
+// app.use("/api/v1/india/contacts", routes.contactRoute);
+// app.use("/api/v1/india/careers", routes.careerRoute);
+// app.use("/api/v1/india/careerForms", routes.careerFormRoute);
+// app.use("/api/v1/india/service", routes.serviceRoute);
+// app.use("/api/v1/india/packages", routes.packageRoute);
+// app.use("/api/v1/india/packageLogs", routes.packageLogRoute);
+// app.use("/api/v1/india/newSletter", routes.newSletter);
+// app.use("/api/v1/india/clients", routes.client);
+// app.use("/api/v1/india/client_postings", routes.client_posting);
 
 
 app.listen(PORT, () => {

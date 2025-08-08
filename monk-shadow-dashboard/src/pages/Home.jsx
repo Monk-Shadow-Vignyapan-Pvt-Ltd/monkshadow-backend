@@ -636,19 +636,18 @@ const Home = () => {
 
                     <div className="flex border-b border-gray-200">
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent  border-accent'   : 'text-gray-500 border-transparent'}`}
+                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent  border-accent' : 'text-gray-500 border-transparent'}`}
                             onClick={() => setActiveTab('pending')}
                         >
-                            Contact Pending
+                            Contact Pending ({filteredContactsList.filter(c => !c.isContactClose).length})
                         </button>
                         <button
                             className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent  border-accent' : 'text-gray-500 border-transparent'} `}
                             onClick={() => setActiveTab('closed')}
                         >
-                            Contact Closed
+                            Contact Closed ({filteredContactsList.filter(c => c.isContactClose).length})
                         </button>
                     </div>
-
 
                     {isSearchLoading &&
                         <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>

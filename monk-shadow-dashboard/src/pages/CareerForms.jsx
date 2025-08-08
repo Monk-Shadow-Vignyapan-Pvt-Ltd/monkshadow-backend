@@ -47,6 +47,7 @@ const CareerForms = () => {
     const [filteredCareersList, setFilteredCareersList] = useState([]);
     const [originalTotalPages, setOriginalTotalPages] = useState(0);
     const [isSearchLoading, setIsSearchLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'closed'
 
     const fetchData = async (page) => {
         setIsLoading(true); // Start loading
@@ -408,81 +409,83 @@ const CareerForms = () => {
                             <input id='search-careers' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by Name or Email etc." />
                         </div>
                     </div>
-
+                    <div className="flex border-b border-gray-200">
+                        <button
+                            className={`px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'pending' ? 'text-accent border-accent' : 'text-gray-500 border-transparent'}`}
+                            onClick={() => setActiveTab('pending')}
+                        >
+                            Career Pending ({filteredCareersList.filter(c => !c.isCareerClose).length})
+                        </button>
+                        <button
+                            className={`px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'closed' ? 'text-accent border-accent' : 'text-gray-500 border-transparent'}`}
+                            onClick={() => setActiveTab('closed')}
+                        >
+                            Career Closed ({filteredCareersList.filter(c => c.isCareerClose).length})
+                        </button>
+                    </div>
                     {isSearchLoading &&
                         <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>
-                            {/* <DataTable
-                                                    columns={contactColumns}
-                                                    data={filteredContacts}
-                                                    pagination
-                                                    highlightOnHover
-                                                    pointerOnHover
-                                                    // striped
-                                                    customStyles={customStyles}
-                                                /> */}
+                            {filteredCareersList.filter(career =>
+                                activeTab === 'pending' ? !career.isCareerClose : career.isCareerClose
+                            )
+                                .map((career) => (
+                                    <div key={career._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Name</span>
+                                            <span className="text-sm">{career.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Email</span>
+                                            <span className="text-sm">{career.email}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Phone No:</span>
+                                            <span className="text-sm">{career.phone}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">City</span>
+                                            <span className="text-sm">{career.city}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Position</span>
+                                            <span className="text-sm">{career.career.position}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Experience</span>
+                                            <span className="text-sm">{career.career.experience}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Job Type</span>
+                                            <span className="text-sm">{career.career.jobType}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Ready to Relocate</span>
+                                            <span className="text-sm">{career.readytoRelocate ? "Yes" : "No"}</span>
+                                        </div>
 
-                            {filteredCareersList.map((career) => (
-                                <div key={career._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
-                                    {/* <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Id</span>
-                                                                                                                <span className="text-sm">{contact._id.slice(-4)}</span>
-                                                                                                            </div> */}
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Name</span>
-                                        <span className="text-sm">{career.name}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Email</span>
-                                        <span className="text-sm">{career.email}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Phone No:</span>
-                                        <span className="text-sm">{career.phone}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">City</span>
-                                        <span className="text-sm">{career.city}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Position</span>
-                                        <span className="text-sm">{career.career.position}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Experience</span>
-                                        <span className="text-sm">{career.career.experience}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Job Type</span>
-                                        <span className="text-sm">{career.career.jobType}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="font-semibold text-sm">Ready to Relocate</span>
-                                        <span className="text-sm">{career.readytoRelocate ? "Yes" : "No"}</span>
-                                    </div>
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                type="checkbox"
+                                                checked={career.isCareerClose}
+                                                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                onChange={() => handleCareerCloseToggle(career)}
+                                            />
+                                            <span className="font-semibold text-sm">Career Close</span>
 
-                                    <div className="flex items-center gap-1">
-                                        <input
-                                            type="checkbox"
-                                            checked={career.isCareerClose}
-                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                            onChange={() => handleCareerCloseToggle(career)}
-                                        />
-                                        <span className="font-semibold text-sm">Career Close</span>
-
-                                    </div>
+                                        </div>
 
 
-                                    <div className="flex flex-col gap-1">
-                                        <button
-                                            className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
-                                            onClick={() => handleShowFollowups(career)}
-                                        >
-                                            Follow-Up
-                                        </button>
-                                    </div>
+                                        <div className="flex flex-col gap-1">
+                                            <button
+                                                className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
+                                                onClick={() => handleShowFollowups(career)}
+                                            >
+                                                Follow-Up
+                                            </button>
+                                        </div>
 
-                                </div>
-                            ))}
+                                    </div>
+                                ))}
 
                         </div>}
                     <div className="flex justify-center mt-2">
