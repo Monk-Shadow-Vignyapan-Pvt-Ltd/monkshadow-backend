@@ -31,22 +31,22 @@ const CareerForms = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false); // Loading state
     const [searchQuery, setSearchQuery] = useState('');
-    const {selectCountry} = useRoles();
-    const [selectedCareer,setSelectedCareer] = useState({});
-        const [isStatusModalOpen,setIsStatusModalOpen] = useState(false);
-        const [editingStatus,setEditingStatus] = useState(null);
-        const [newStatus, setNewStatus] = useState("");
-        const [followStatus,setFollowStatus] = useState("Pending");
-        const [followupMessage,setFollowupMessage] = useState("");
-        const [customStatuses, setCustomStatuses] = useState([]);
-        const [isStatusLoading,setIsStatusLoading] = useState(true);
-        const [editStatusLoading,setEditStatusLoading] = useState(false);
-        const [isFollowUpLoading,setIsFollowUpLoading] = useState(false);
-        const [totalPages, setTotalPages] = useState(0);
-        const [currentPage, setCurrentPage] = useState(1);
-        const [filteredCareersList, setFilteredCareersList] = useState([]);
-        const [originalTotalPages, setOriginalTotalPages] = useState(0);
-        const [isSearchLoading, setIsSearchLoading] = useState(true);
+    const { selectCountry } = useRoles();
+    const [selectedCareer, setSelectedCareer] = useState({});
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [editingStatus, setEditingStatus] = useState(null);
+    const [newStatus, setNewStatus] = useState("");
+    const [followStatus, setFollowStatus] = useState("Pending");
+    const [followupMessage, setFollowupMessage] = useState("");
+    const [customStatuses, setCustomStatuses] = useState([]);
+    const [isStatusLoading, setIsStatusLoading] = useState(true);
+    const [editStatusLoading, setEditStatusLoading] = useState(false);
+    const [isFollowUpLoading, setIsFollowUpLoading] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filteredCareersList, setFilteredCareersList] = useState([]);
+    const [originalTotalPages, setOriginalTotalPages] = useState(0);
+    const [isSearchLoading, setIsSearchLoading] = useState(true);
 
     const fetchData = async (page) => {
         setIsLoading(true); // Start loading
@@ -55,6 +55,9 @@ const CareerForms = () => {
 
             const careersData = careersResponse?.data?.careerForms || [];
             //const followupsData = followupsResponse?.data?.followups || [];
+
+            console.log("careersResponse?.data?.careerForms:-", careersResponse?.data?.careerForms);
+
 
             setCareers(careersData);
             setFilteredCareersList(careersData);
@@ -117,13 +120,13 @@ const CareerForms = () => {
     };
 
     useEffect(() => {
-       // fetchData();
+        // fetchData();
         fetchStatuses();
     }, []);
 
     useEffect(() => {
         fetchData(currentPage);
-    }, [selectCountry,currentPage]);
+    }, [selectCountry, currentPage]);
 
     const handleShowFollowups = (careerFormId) => {
         const followups = followupsByCareer[careerFormId] || [];
@@ -280,7 +283,7 @@ const CareerForms = () => {
     const filteredCareers = careers.filter(career =>
         career.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         career.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        career.email.toLowerCase().includes(searchQuery.toLowerCase()) 
+        career.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const addOrUpdateStatus = async () => {
@@ -309,7 +312,7 @@ const CareerForms = () => {
             setFollowStatus(response.data.status.name);
             fetchStatuses();
             closeStatusModal();
-            
+
         }
         // setCustomStatuses(updatedStatuses);
         // closeModal();
@@ -331,7 +334,7 @@ const CareerForms = () => {
         }
     };
 
-    const openStatusModal = (status = null ) =>{
+    const openStatusModal = (status = null) => {
         setEditingStatus(status);
         setNewStatus(status ? status.name : "");
         setIsStatusModalOpen(true);
@@ -346,24 +349,24 @@ const CareerForms = () => {
     const handleAddFollowUp = async () => {
         setIsFollowUpLoading(true);
 
-        if (!followupMessage ) {
+        if (!followupMessage) {
             setIsFollowUpLoading(false);
             return toast.warn('Please fill out Follow Up Message');
         }
 
         const data = {
-            name:selectedCareer.name,
-            phone:selectedCareer.phone,
-            email:selectedCareer.email, // May be null if no file is provided
-            resume:selectedCareer.resume,
-            city:selectedCareer.city,
-            readytoRelocate:selectedCareer.readytoRelocate,
-            allowYoutoContact:selectedCareer.allowYoutoContact,
-            careerId:selectedCareer.careerId,
-            isCareerClose:selectedCareer.isCareerClose,
+            name: selectedCareer.name,
+            phone: selectedCareer.phone,
+            email: selectedCareer.email, // May be null if no file is provided
+            resume: selectedCareer.resume,
+            city: selectedCareer.city,
+            readytoRelocate: selectedCareer.readytoRelocate,
+            allowYoutoContact: selectedCareer.allowYoutoContact,
+            careerId: selectedCareer.careerId,
+            isCareerClose: selectedCareer.isCareerClose,
             followups: [
                 ...(selectedCareer.followups || []), // Ensure followups is an array
-                { followStatus, followupMessage ,updatedDate:new Date()},
+                { followStatus, followupMessage, updatedDate: new Date() },
             ]
         };
 
@@ -381,19 +384,19 @@ const CareerForms = () => {
             setFollowStatus("Pending");
             setFollowupMessage("");
             setIsFollowUpLoading(false);
-        
+
         } catch (error) {
             console.error('Error uploading Follwup:', error);
             toast.error('Failed to upload Follwup.');
         } finally {
 
 
-        } 
+        }
     }
 
     return (
         <>
-             {isLoading || isStatusLoading ? (
+            {isLoading || isStatusLoading ? (
                 <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
                     <i className="loader" />
                 </div>) : <>
@@ -405,10 +408,10 @@ const CareerForms = () => {
                             <input id='search-careers' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by Name or Email etc." />
                         </div>
                     </div>
-                    
-                        {isSearchLoading &&
-                                            <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>
-                                                {/* <DataTable
+
+                    {isSearchLoading &&
+                        <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>
+                            {/* <DataTable
                                                     columns={contactColumns}
                                                     data={filteredContacts}
                                                     pagination
@@ -417,262 +420,262 @@ const CareerForms = () => {
                                                     // striped
                                                     customStyles={customStyles}
                                                 /> */}
-                        
-                                                {filteredCareersList.map((career) => (
-                                                                                                        <div key={career._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
-                                                                                                            {/* <div className="flex items-center gap-1">
+
+                            {filteredCareersList.map((career) => (
+                                <div key={career._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
+                                    {/* <div className="flex items-center gap-1">
                                                                                                                 <span className="font-semibold text-sm">Id</span>
                                                                                                                 <span className="text-sm">{contact._id.slice(-4)}</span>
                                                                                                             </div> */}
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Name</span>
-                                                                                                                <span className="text-sm">{career.name}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Email</span>
-                                                                                                                <span className="text-sm">{career.email}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Phone No:</span>
-                                                                                                                <span className="text-sm">{career.phone}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">City</span>
-                                                                                                                <span className="text-sm">{career.city}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Position</span>
-                                                                                                                <span className="text-sm">{career.career.position}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Experience</span>
-                                                                                                                <span className="text-sm">{career.career.experience}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Job Type</span>
-                                                                                                                <span className="text-sm">{career.career.jobType}</span>
-                                                                                                            </div>
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <span className="font-semibold text-sm">Ready to Relocate</span>
-                                                                                                                <span className="text-sm">{career.readytoRelocate ? "Yes" : "No"}</span>
-                                                                                                            </div>
-                                                                                                            
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                            <input
-                                                                                                                    type="checkbox"
-                                                                                                                    checked={career.isCareerClose}
-                                                                                                                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                                                                                                    onChange={() => handleCareerCloseToggle(career)}
-                                                                                                                />
-                                                                                                                <span className="font-semibold text-sm">Career Close</span>
-                                                                                                                
-                                                                                                            </div>
-                        
-                        
-                                                                                                            <div className="flex flex-col gap-1">
-                                                                                                            <button
-                                                                                                                className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
-                                                                                                                onClick={() => handleShowFollowups(career)}
-                                                                                                            >
-                                                                                                                Follow-Up
-                                                                                                            </button>
-                                                                                                            </div>
-                                                                                                            
-                                                                                                        </div>
-                                                                                                    ))}
-                                                 
-                                            </div> }
-                                            <div className="flex justify-center mt-2">
-                                                                <button
-                                                                    className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                                                    disabled={currentPage === 1}
-                                                                    onClick={() => handlePageChange(currentPage - 1)}
-                                                                >
-                                                                    Previous
-                                                                </button>
-                                                                <button
-                                                                    className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                                                    disabled={currentPage === totalPages}
-                                                                    onClick={() => handlePageChange(currentPage + 1)}
-                                                                >
-                                                                    Next
-                                                                </button>
-                                                            </div>
-                    
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Name</span>
+                                        <span className="text-sm">{career.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Email</span>
+                                        <span className="text-sm">{career.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Phone No:</span>
+                                        <span className="text-sm">{career.phone}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">City</span>
+                                        <span className="text-sm">{career.city}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Position</span>
+                                        <span className="text-sm">{career.career.position}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Experience</span>
+                                        <span className="text-sm">{career.career.experience}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Job Type</span>
+                                        <span className="text-sm">{career.career.jobType}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="font-semibold text-sm">Ready to Relocate</span>
+                                        <span className="text-sm">{career.readytoRelocate ? "Yes" : "No"}</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            checked={career.isCareerClose}
+                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                            onChange={() => handleCareerCloseToggle(career)}
+                                        />
+                                        <span className="font-semibold text-sm">Career Close</span>
+
+                                    </div>
+
+
+                                    <div className="flex flex-col gap-1">
+                                        <button
+                                            className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
+                                            onClick={() => handleShowFollowups(career)}
+                                        >
+                                            Follow-Up
+                                        </button>
+                                    </div>
+
+                                </div>
+                            ))}
+
+                        </div>}
+                    <div className="flex justify-center mt-2">
+                        <button
+                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            disabled={currentPage === 1}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            disabled={currentPage === totalPages}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                            Next
+                        </button>
+                    </div>
+
 
                     <Modal
-                                           isOpen={isModalOpen}
-                                           onRequestClose={closeModal}
-                                           contentLabel="Follow-Ups Modal"
-                                           className="bg-white  p-6 rounded-lg shadow-lg max-w-lg w-full relative max-h-[95vh] overflow-y-auto"
-                                           overlayClassName="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50"
-                                       >
-                                           <div className="flex items-center justify-between w-full border-b-2 pb-4">
-                                               <h3 className="text-xl font-bold text-accent">Follow-Ups</h3>
-                                               <button onClick={closeModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
-                                                   <FaPlus className="rotate-45 text-mainBg" size={22} />
-                                               </button>
-                                           </div>
-                                           {isFollowUpLoading ?
-                                                                       <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
-                                                                       <i className="loader" />
-                                                                   </div>
-                                                                       :
-                                           <>
-                                           {selectedCareer.isCareerClose ? <div className="flex flex-col gap-2 mt-2"> <p>This Career Is Closed.</p></div> :
-                                           <>
-                                           <div className="flex flex-col gap-2 mt-2">
-                                          {editStatusLoading ?
-                                                                      <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                                                          <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
-                                                                      </div>
-                                                                      :
-                                          <div className="flex flex-col gap-2">
-                                                          <label className="text-sm font-semibold" htmlFor="followStatus">Status</label>
-                                                          <div className="flex items-center gap-2 relative w-full overflow-visible">
-                                                              <Listbox className="w-full" value={followStatus} onChange={setFollowStatus}>
-                                                                  <div className="relative ">
-                                                                  <ListboxButton
-                                                                      id="category"
-                                                                      className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                                                                      aria-expanded="true"
-                                                                  >
-                                                                          <span className="flex items-center">
-                                                                              {followStatus}
-                                                                          </span>
-                                                                      </ListboxButton>
-                   
-                                                                      <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                   
-                                                                          {customStatuses?.map((status) => (
-                                                                              <ListboxOption
-                                                                                  key={status._id}
-                                                                                  value={status.name}
-                                                                                  className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 data-[focus]:bg-lightRed data-[focus]:text-white"
-                                                                              >
-                   
-                                                                                  <div className="flex items-center justify-between">
-                                                                                      {status.name}
-                                                                                      {(status.name === "Pending" || status.name === "Cancelled") ? null :
-                                                                                      <div className="flex items-center gap-1">
-                                                                                      <button onClick={() => openStatusModal(status)}>
-                                                                                                  <EditIcon width={15} height={15} fill={"#000"} />
-                                                                                              </button>
-                                                                                              <button onClick={() => deleteStatus(status._id)}>
-                                                                                                  <MdOutlineDelete size={17} fill="#000" />
-                                                                                              </button>
-                                                                                      </div>}
-                                                                                  </div>
-                                                                              </ListboxOption>
-                                                                          ))}
-                                                                      </ListboxOptions>
-                                                                  </div>
-                                                              </Listbox>
-                                                              <button onClick={() => openStatusModal()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                                      <FaPlus size={18} fill="#C03A03" />
-                                                                  </button>
-                                                          </div>
-                                                      </div> }
-                                                      <div className="flex flex-col gap-2">
-                                                          <label className="text-sm font-semibold required" htmlFor="followupMessage">Follow Up Message</label>
-                                                          <input
-                                                  id="followupMessage"
-                                                  type="text"
-                                                  value={followupMessage}
-                                                  placeholder="Enter Follow Up Message"
-                                                  onChange={(e) => setFollowupMessage(e.target.value)}
-                                                  className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                                              />
-                                                      </div>
-                                          </div>
-                   
-                                          <div className="flex flex-col gap-2 mt-4 mb-2">
-                                          <button
-                                              onClick={() => handleAddFollowUp()}
-                                              className="bg-accent hover:bg-accent/70 w-50 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-                                          >
-                                              Add Follow Up
-                                          </button>
-                                          </div>
-                                          </>
-                                           }
-                                           
-                                           
-                                            <div className=" mt-2">
-                                           {selectedCareer.followups && selectedCareer.followups.length > 0 ? (
-                                                   selectedCareer.followups.slice().reverse().map((followup, index) => (
-                                                       <div key={index} className="border-b-2 flex flex-col gap-2 py-4">
-                                                           <p><strong>Updated At:</strong> {new Date(followup.updatedDate).toLocaleString()}</p>
-                                                           <p><strong>Status:</strong> <span className="text-accent font-semibold">{followup.followStatus}</span></p>
-                                                           <p><strong>Message:</strong> {followup.followupMessage}</p>
-                                                       </div>
-                                                   ))
-                                               ) : (
-                                                   <p>No follow-ups available.</p>
-                                               )}
-                                                  
-                                           </div> 
-                                           </>}
-                                           {/* <button
+                        isOpen={isModalOpen}
+                        onRequestClose={closeModal}
+                        contentLabel="Follow-Ups Modal"
+                        className="bg-white  p-6 rounded-lg shadow-lg max-w-lg w-full relative max-h-[95vh] overflow-y-auto"
+                        overlayClassName="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50"
+                    >
+                        <div className="flex items-center justify-between w-full border-b-2 pb-4">
+                            <h3 className="text-xl font-bold text-accent">Follow-Ups</h3>
+                            <button onClick={closeModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
+                                <FaPlus className="rotate-45 text-mainBg" size={22} />
+                            </button>
+                        </div>
+                        {isFollowUpLoading ?
+                            <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
+                                <i className="loader" />
+                            </div>
+                            :
+                            <>
+                                {selectedCareer.isCareerClose ? <div className="flex flex-col gap-2 mt-2"> <p>This Career Is Closed.</p></div> :
+                                    <>
+                                        <div className="flex flex-col gap-2 mt-2">
+                                            {editStatusLoading ?
+                                                <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                                                    <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                                                </div>
+                                                :
+                                                <div className="flex flex-col gap-2">
+                                                    <label className="text-sm font-semibold" htmlFor="followStatus">Status</label>
+                                                    <div className="flex items-center gap-2 relative w-full overflow-visible">
+                                                        <Listbox className="w-full" value={followStatus} onChange={setFollowStatus}>
+                                                            <div className="relative ">
+                                                                <ListboxButton
+                                                                    id="category"
+                                                                    className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                                                    aria-expanded="true"
+                                                                >
+                                                                    <span className="flex items-center">
+                                                                        {followStatus}
+                                                                    </span>
+                                                                </ListboxButton>
+
+                                                                <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+
+                                                                    {customStatuses?.map((status) => (
+                                                                        <ListboxOption
+                                                                            key={status._id}
+                                                                            value={status.name}
+                                                                            className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 data-[focus]:bg-lightRed data-[focus]:text-white"
+                                                                        >
+
+                                                                            <div className="flex items-center justify-between">
+                                                                                {status.name}
+                                                                                {(status.name === "Pending" || status.name === "Cancelled") ? null :
+                                                                                    <div className="flex items-center gap-1">
+                                                                                        <button onClick={() => openStatusModal(status)}>
+                                                                                            <EditIcon width={15} height={15} fill={"#000"} />
+                                                                                        </button>
+                                                                                        <button onClick={() => deleteStatus(status._id)}>
+                                                                                            <MdOutlineDelete size={17} fill="#000" />
+                                                                                        </button>
+                                                                                    </div>}
+                                                                            </div>
+                                                                        </ListboxOption>
+                                                                    ))}
+                                                                </ListboxOptions>
+                                                            </div>
+                                                        </Listbox>
+                                                        <button onClick={() => openStatusModal()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
+                                                            <FaPlus size={18} fill="#C03A03" />
+                                                        </button>
+                                                    </div>
+                                                </div>}
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-sm font-semibold required" htmlFor="followupMessage">Follow Up Message</label>
+                                                <input
+                                                    id="followupMessage"
+                                                    type="text"
+                                                    value={followupMessage}
+                                                    placeholder="Enter Follow Up Message"
+                                                    onChange={(e) => setFollowupMessage(e.target.value)}
+                                                    className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 mt-4 mb-2">
+                                            <button
+                                                onClick={() => handleAddFollowUp()}
+                                                className="bg-accent hover:bg-accent/70 w-50 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
+                                            >
+                                                Add Follow Up
+                                            </button>
+                                        </div>
+                                    </>
+                                }
+
+
+                                <div className=" mt-2">
+                                    {selectedCareer.followups && selectedCareer.followups.length > 0 ? (
+                                        selectedCareer.followups.slice().reverse().map((followup, index) => (
+                                            <div key={index} className="border-b-2 flex flex-col gap-2 py-4">
+                                                <p><strong>Updated At:</strong> {new Date(followup.updatedDate).toLocaleString()}</p>
+                                                <p><strong>Status:</strong> <span className="text-accent font-semibold">{followup.followStatus}</span></p>
+                                                <p><strong>Message:</strong> {followup.followupMessage}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No follow-ups available.</p>
+                                    )}
+
+                                </div>
+                            </>}
+                        {/* <button
                                                className="mt-4 bg-accent text-white px-4 py-2 rounded-lg"
                                                onClick={closeModal}
                                            >
                                                Close
                                            </button> */}
-                                           {/* <button onClick={closeModal} className="absolute top-4 right-4 icon-lg flex items-center justify-center rounded-full bg-accent">
+                        {/* <button onClick={closeModal} className="absolute top-4 right-4 icon-lg flex items-center justify-center rounded-full bg-accent">
                                                <FaPlus className="rotate-45 text-mainBg" size={22} />
                                            </button> */}
-                                       </Modal>
-                   
-                                       <Modal
-                                                               isOpen={isStatusModalOpen}
-                                                               onRequestClose={closeStatusModal}
-                                                               className="flex flex-col gap-6 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative"
-                                                               overlayClassName="overlay"
-                                                           >
-                                                               <div className="flex justify-between items-center">
-                                                                   <h2 className="text-lg font-bold">{editingStatus ? "Update Status" : "Add Status"}</h2>
-                                                                   <button onClick={closeStatusModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
-                                                                       <FaPlus className="rotate-45 text-mainBg" size={22} />
-                                                                   </button>
-                                                               </div>
-                                                               {editStatusLoading ?
-                                                                       <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                                                           <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
-                                                                       </div>
-                                                                       :
-                                                               <div className="flex flex-col sm:flex-row items-center gap-3">
-                                                                   <div className="w-full sm:w-full flex-1">
-                                                                       <input
-                                                                           type="text"
-                                                                           placeholder="Enter status"
-                                                                           value={newStatus}
-                                                                           onChange={(e) => setNewStatus(e.target.value)}
-                                                                           className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                                                                       />
-                                                                   </div>
-                                                                   <div className="w-full sm:w-fit flex gap-2">
-                                                                       <button
-                                                                           onClick={addOrUpdateStatus}
-                                                                           className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                                                                       >
-                                                                           {editingStatus ? "Update Status" : "Add Status"}
-                                                                       </button>
-                                                                       <button
-                                                                           onClick={closeStatusModal}
-                                                                           className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                                                                       >
-                                                                           Cancel
-                                                                       </button>
-                                                                   </div>
-                                                               </div> }
-                                                               
-                                                           </Modal>
+                    </Modal>
 
-                    
+                    <Modal
+                        isOpen={isStatusModalOpen}
+                        onRequestClose={closeStatusModal}
+                        className="flex flex-col gap-6 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative"
+                        overlayClassName="overlay"
+                    >
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-lg font-bold">{editingStatus ? "Update Status" : "Add Status"}</h2>
+                            <button onClick={closeStatusModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
+                                <FaPlus className="rotate-45 text-mainBg" size={22} />
+                            </button>
+                        </div>
+                        {editStatusLoading ?
+                            <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                                <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                            </div>
+                            :
+                            <div className="flex flex-col sm:flex-row items-center gap-3">
+                                <div className="w-full sm:w-full flex-1">
+                                    <input
+                                        type="text"
+                                        placeholder="Enter status"
+                                        value={newStatus}
+                                        onChange={(e) => setNewStatus(e.target.value)}
+                                        className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                    />
+                                </div>
+                                <div className="w-full sm:w-fit flex gap-2">
+                                    <button
+                                        onClick={addOrUpdateStatus}
+                                        className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+                                    >
+                                        {editingStatus ? "Update Status" : "Add Status"}
+                                    </button>
+                                    <button
+                                        onClick={closeStatusModal}
+                                        className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>}
+
+                    </Modal>
+
+
                 </div>
-                </>}
-                <ToastContainer />
+            </>}
+            <ToastContainer />
         </>
     );
 };

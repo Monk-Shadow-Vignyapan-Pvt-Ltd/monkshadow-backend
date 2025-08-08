@@ -32,7 +32,7 @@ const Home = () => {
     const [isLoading, setIsLoading] = useState(false); // Loading state
     const [searchQuery, setSearchQuery] = useState('');
     const { selectCountry } = useRoles();
-     const {role} = useRoles() ;
+    const { role } = useRoles();
     const [editingContact, setEditingContact] = useState(null);
     const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
     const [name, setName] = useState("");
@@ -43,22 +43,23 @@ const Home = () => {
     const [companyName, setCompanyName] = useState("");
     const [websiteUrl, setWebsiteUrl] = useState("");
     const [pages, setPages] = useState(["contactus", "home", "seo", "performancemarketing", "webdevelopment"])
-    const [selectedContact,setSelectedContact] = useState({});
-    const [isStatusModalOpen,setIsStatusModalOpen] = useState(false);
-    const [editingStatus,setEditingStatus] = useState(null);
+    const [selectedContact, setSelectedContact] = useState({});
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [editingStatus, setEditingStatus] = useState(null);
     const [newStatus, setNewStatus] = useState("");
-    const [followStatus,setFollowStatus] = useState("Pending");
-    const [followupMessage,setFollowupMessage] = useState("");
+    const [followStatus, setFollowStatus] = useState("Pending");
+    const [followupMessage, setFollowupMessage] = useState("");
     const [customStatuses, setCustomStatuses] = useState([]);
-    const [isStatusLoading,setIsStatusLoading] = useState(true);
-    const [editStatusLoading,setEditStatusLoading] = useState(false);
-    const [isFollowUpLoading,setIsFollowUpLoading] = useState(false);
-
+    const [isStatusLoading, setIsStatusLoading] = useState(true);
+    const [editStatusLoading, setEditStatusLoading] = useState(false);
+    const [isFollowUpLoading, setIsFollowUpLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [filteredContactsList, setFilteredContactsList] = useState([]);
     const [originalTotalPages, setOriginalTotalPages] = useState(0);
     const [isSearchLoading, setIsSearchLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'closed'
+
 
     const fetchData = async (page) => {
         setIsLoading(true); // Start loading
@@ -128,19 +129,19 @@ const Home = () => {
     };
 
     useEffect(() => {
-       // fetchData();
+        // fetchData();
         fetchStatuses();
     }, []);
 
     useEffect(() => {
         fetchData(currentPage);
-    }, [selectCountry,currentPage])
+    }, [selectCountry, currentPage])
 
     const handleShowFollowups = (contact) => {
         // const followups = followupsByContact[contactId] || [];
         // const sortedFollowups = [...followups].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
         // setSelectedContactFollowups(sortedFollowups);
-            setSelectedContact(contact);
+        setSelectedContact(contact);
         setIsModalOpen(true);
     };
 
@@ -298,7 +299,7 @@ const Home = () => {
             ),
             sortable: true,
         },
-        ...(selectCountry === "canada" 
+        ...(selectCountry === "canada"
             ? [
                 {
                     name: 'Inquiry About',
@@ -529,7 +530,7 @@ const Home = () => {
             setFollowStatus(response.data.status.name);
             fetchStatuses();
             closeStatusModal();
-            
+
         }
         // setCustomStatuses(updatedStatuses);
         // closeModal();
@@ -551,7 +552,7 @@ const Home = () => {
         }
     };
 
-    const openStatusModal = (status = null ) =>{
+    const openStatusModal = (status = null) => {
         setEditingStatus(status);
         setNewStatus(status ? status.name : "");
         setIsStatusModalOpen(true);
@@ -566,24 +567,24 @@ const Home = () => {
     const handleAddFollowUp = async () => {
         setIsFollowUpLoading(true);
 
-        if (!followupMessage ) {
+        if (!followupMessage) {
             setIsFollowUpLoading(false);
             return toast.warn('Please fill out Follow Up Message');
         }
 
         const data = {
-            name:selectedContact.name,
-            phone:selectedContact.phone,
-            email:selectedContact.email, // May be null if no file is provided
-            message:selectedContact.message,
-            companyName:selectedContact.companyName,
-            websiteUrl:selectedContact.websiteUrl,
-            pageName:selectedContact.pageName,
-            isContactClose:selectedContact.isContactClose,
-            showForAll:selectedContact.showForAll,
+            name: selectedContact.name,
+            phone: selectedContact.phone,
+            email: selectedContact.email, // May be null if no file is provided
+            message: selectedContact.message,
+            companyName: selectedContact.companyName,
+            websiteUrl: selectedContact.websiteUrl,
+            pageName: selectedContact.pageName,
+            isContactClose: selectedContact.isContactClose,
+            showForAll: selectedContact.showForAll,
             followups: [
                 ...(selectedContact.followups || []), // Ensure followups is an array
-                { followStatus, followupMessage ,updatedDate:new Date()},
+                { followStatus, followupMessage, updatedDate: new Date() },
             ]
         };
 
@@ -601,14 +602,14 @@ const Home = () => {
             setFollowStatus("Pending");
             setFollowupMessage("");
             setIsFollowUpLoading(false);
-        
+
         } catch (error) {
             console.error('Error uploading Follwup:', error);
             toast.error('Failed to upload Follwup.');
         } finally {
 
 
-        } 
+        }
     }
 
     return (
@@ -633,109 +634,116 @@ const Home = () => {
                         </button>
                     </div>
 
+                    <div className="flex border-b border-gray-200">
+                        <button
+                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent  border-accent'   : 'text-gray-500 border-transparent'}`}
+                            onClick={() => setActiveTab('pending')}
+                        >
+                            Contact Pending
+                        </button>
+                        <button
+                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent  border-accent' : 'text-gray-500 border-transparent'} `}
+                            onClick={() => setActiveTab('closed')}
+                        >
+                            Contact Closed
+                        </button>
+                    </div>
+
+
                     {isSearchLoading &&
-                    <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>
-                        {/* <DataTable
-                            columns={contactColumns}
-                            data={filteredContacts}
-                            pagination
-                            highlightOnHover
-                            pointerOnHover
-                            // striped
-                            customStyles={customStyles}
-                        /> */}
+                        <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>
+                            {filteredContactsList
+                                .filter(contact =>
+                                    activeTab === 'pending' ? !contact.isContactClose : contact.isContactClose
+                                )
+                                .map((contact) => (
+                                    <div key={contact._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Name</span>
+                                            <span className="text-sm">{contact.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Email</span>
+                                            <span className="text-sm">{contact.email}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Phone No:</span>
+                                            <span className="text-sm">{contact.phone}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="font-semibold text-sm">Message</span>
+                                            <span className="text-sm">{contact.message}</span>
+                                        </div>
+                                        {selectCountry === "canada" && <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Inquiry About</span>
+                                            <span className="text-sm">{contact.pageName}</span>
+                                        </div>}
+                                        {selectCountry === "canada" && <div className="flex items-center gap-1">
+                                            <span className="font-semibold text-sm">Company Name</span>
+                                            <span className="text-sm">{contact.companyName ? contact.companyName : contact.websiteUrl}</span>
+                                        </div>}
 
-                        {filteredContactsList.map((contact) => (
-                                                                                <div key={contact._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
-                                                                                    {/* <div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Id</span>
-                                                                                        <span className="text-sm">{contact._id.slice(-4)}</span>
-                                                                                    </div> */}
-                                                                                    <div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Name</span>
-                                                                                        <span className="text-sm">{contact.name}</span>
-                                                                                    </div>
-                                                                                    <div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Email</span>
-                                                                                        <span className="text-sm">{contact.email}</span>
-                                                                                    </div>
-                                                                                    <div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Phone No:</span>
-                                                                                        <span className="text-sm">{contact.phone}</span>
-                                                                                    </div>
-                                                                                    <div className="flex flex-col gap-1">
-                                                                                        <span className="font-semibold text-sm">Message</span>
-                                                                                        <span className="text-sm">{contact.message}</span>
-                                                                                    </div>
-                                                                                    {selectCountry === "canada" &&<div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Inquiry About</span>
-                                                                                        <span className="text-sm">{contact.pageName}</span>
-                                                                                    </div>}
-                                                                                    {selectCountry === "canada" &&<div className="flex items-center gap-1">
-                                                                                        <span className="font-semibold text-sm">Company Name</span>
-                                                                                        <span className="text-sm">{contact.companyName ? contact.companyName : contact.websiteUrl}</span>
-                                                                                    </div>}
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                type="checkbox"
+                                                checked={contact.isContactClose}
+                                                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                onChange={() => handleContactCloseToggle(contact)}
+                                            />
+                                            <span className="font-semibold text-sm">Contact Close</span>
 
-                                                                                    <div className="flex items-center gap-1">
-                                                                                    <input
-                                                                                            type="checkbox"
-                                                                                            checked={contact.isContactClose}
-                                                                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                                                                            onChange={() => handleContactCloseToggle(contact)}
-                                                                                        />
-                                                                                        <span className="font-semibold text-sm">Contact Close</span>
-                                                                                        
-                                                                                    </div>
+                                        </div>
 
-                                                                                    {selectCountry === "canada" && role === "India" &&<div className="flex items-center gap-1">
-                                                                                    <input
-                                                                                            type="checkbox"
-                                                                                            checked={contact.showForAll}
-                                                                                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                                                                            onChange={() => handleShowForAllToggle(contact)}
-                                                                                        />
-                                                                                        <span className="font-semibold text-sm">Show For All</span>
-                                                                                        
-                                                                                    </div>}
+                                        {selectCountry === "canada" && role === "India" && <div className="flex items-center gap-1">
+                                            <input
+                                                type="checkbox"
+                                                checked={contact.showForAll}
+                                                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                onChange={() => handleShowForAllToggle(contact)}
+                                            />
+                                            <span className="font-semibold text-sm">Show For All</span>
 
-                                                                                    <div className="flex flex-col gap-1">
-                                                                                    <button
-                                                                                        className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
-                                                                                        onClick={() => handleShowFollowups(contact)}
-                                                                                    >
-                                                                                        Follow-Up
-                                                                                    </button>
-                                                                                    </div>
-                                                                                    <div className="flex absolute top-2.5 right-2 gap-2">
-                                                                                        
-                                                                                            <button onClick={() => openModal(contact)}>
-                                                                                                <EditIcon width={16} height={16} fill={"#444050"} />
-                                                                                            </button> 
-                                                                                        
-                                                                                            <button onClick={() => handleDeleteClick(users._id)}>
-                                                                                                <MdOutlineDelete size={23} fill='#F05F23' />
-                                                                                            </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            ))}
-                         
-                    </div> }
-                    <div className="flex justify-center mt-2">
-                                        <button
-                                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                            disabled={currentPage === 1}
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                        >
-                                            Previous
-                                        </button>
-                                        <button
-                                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                            disabled={currentPage === totalPages}
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                        >
-                                            Next
-                                        </button>
+                                        </div>}
+
+                                        <div className="flex flex-col gap-1">
+                                            <button
+                                                className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
+                                                onClick={() => handleShowFollowups(contact)}
+                                            >
+                                                Follow-Up
+                                            </button>
+                                        </div>
+                                        <div className="flex absolute top-2.5 right-2 gap-2">
+
+                                            <button onClick={() => openModal(contact)}>
+                                                <EditIcon width={16} height={16} fill={"#444050"} />
+                                            </button>
+
+                                            <button onClick={() => handleDeleteClick(contact._id)}>
+                                                <MdOutlineDelete size={23} fill='#F05F23' />
+                                            </button>
+                                        </div>
                                     </div>
+                                ))
+                            }
+                        </div>
+                    }
+                    <div className="flex justify-center mt-2">
+                        <button
+                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            disabled={currentPage === 1}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            disabled={currentPage === totalPages}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                            Next
+                        </button>
+                    </div>
                     <Modal
                         isOpen={isAddEditModalOpen}
                         onRequestClose={closeAddEditModal}
@@ -824,9 +832,6 @@ const Home = () => {
                                         </option>
                                     ))}
                                 </select>
-                                {/* <button onClick={(e) => openStateModal(e)} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                    <FaPlus size={18} fill="#2dafbe" />
-                                </button> */}
                             </div>
                         </div>}
 
@@ -889,105 +894,105 @@ const Home = () => {
                             </button>
                         </div>
                         {isFollowUpLoading ?
-                                                    <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
-                                                    <i className="loader" />
+                            <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
+                                <i className="loader" />
+                            </div>
+                            :
+                            <>
+                                {selectedContact.isContactClose ? <div className="flex flex-col gap-2 mt-2"> <p>This Contact Is Closed.</p></div> :
+                                    <>
+                                        <div className="flex flex-col gap-2 mt-2">
+                                            {editStatusLoading ?
+                                                <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                                                    <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
                                                 </div>
-                                                    :
-                        <>
-                        {selectedContact.isContactClose ? <div className="flex flex-col gap-2 mt-2"> <p>This Contact Is Closed.</p></div> :
-                        <>
-                        <div className="flex flex-col gap-2 mt-2">
-                       {editStatusLoading ?
-                                                   <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                                       <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
-                                                   </div>
-                                                   :
-                       <div className="flex flex-col gap-2">
-                                       <label className="text-sm font-semibold" htmlFor="followStatus">Status</label>
-                                       <div className="flex items-center gap-2 relative w-full overflow-visible">
-                                           <Listbox className="w-full" value={followStatus} onChange={setFollowStatus}>
-                                               <div className="relative ">
-                                               <ListboxButton
-                                                   id="category"
-                                                   className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                                                   aria-expanded="true"
-                                               >
-                                                       <span className="flex items-center">
-                                                           {followStatus}
-                                                       </span>
-                                                   </ListboxButton>
+                                                :
+                                                <div className="flex flex-col gap-2">
+                                                    <label className="text-sm font-semibold" htmlFor="followStatus">Status</label>
+                                                    <div className="flex items-center gap-2 relative w-full overflow-visible">
+                                                        <Listbox className="w-full" value={followStatus} onChange={setFollowStatus}>
+                                                            <div className="relative ">
+                                                                <ListboxButton
+                                                                    id="category"
+                                                                    className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                                                    aria-expanded="true"
+                                                                >
+                                                                    <span className="flex items-center">
+                                                                        {followStatus}
+                                                                    </span>
+                                                                </ListboxButton>
 
-                                                   <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                                <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 
-                                                       {customStatuses?.map((status) => (
-                                                           <ListboxOption
-                                                               key={status._id}
-                                                               value={status.name}
-                                                               className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 data-[focus]:bg-lightRed data-[focus]:text-white"
-                                                           >
+                                                                    {customStatuses?.map((status) => (
+                                                                        <ListboxOption
+                                                                            key={status._id}
+                                                                            value={status.name}
+                                                                            className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 data-[focus]:bg-lightRed data-[focus]:text-white"
+                                                                        >
 
-                                                               <div className="flex items-center justify-between">
-                                                                   {status.name}
-                                                                   {(status.name === "Pending" || status.name === "Cancelled") ? null :
-                                                                   <div className="flex items-center gap-1">
-                                                                   <button onClick={() => openStatusModal(status)}>
-                                                                               <EditIcon width={15} height={15} fill={"#000"} />
-                                                                           </button>
-                                                                           <button onClick={() => deleteStatus(status._id)}>
-                                                                               <MdOutlineDelete size={17} fill="#000" />
-                                                                           </button>
-                                                                   </div>}
-                                                               </div>
-                                                           </ListboxOption>
-                                                       ))}
-                                                   </ListboxOptions>
-                                               </div>
-                                           </Listbox>
-                                           <button onClick={() => openStatusModal()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                   <FaPlus size={18} fill="#C03A03" />
-                                               </button>
-                                       </div>
-                                   </div> }
-                                   <div className="flex flex-col gap-2">
-                                       <label className="text-sm font-semibold required" htmlFor="followupMessage">Follow Up Message</label>
-                                       <input
-                               id="followupMessage"
-                               type="text"
-                               value={followupMessage}
-                               placeholder="Enter Follow Up Message"
-                               onChange={(e) => setFollowupMessage(e.target.value)}
-                               className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                           />
-                                   </div>
-                       </div>
+                                                                            <div className="flex items-center justify-between">
+                                                                                {status.name}
+                                                                                {(status.name === "Pending" || status.name === "Cancelled") ? null :
+                                                                                    <div className="flex items-center gap-1">
+                                                                                        <button onClick={() => openStatusModal(status)}>
+                                                                                            <EditIcon width={15} height={15} fill={"#000"} />
+                                                                                        </button>
+                                                                                        <button onClick={() => deleteStatus(status._id)}>
+                                                                                            <MdOutlineDelete size={17} fill="#000" />
+                                                                                        </button>
+                                                                                    </div>}
+                                                                            </div>
+                                                                        </ListboxOption>
+                                                                    ))}
+                                                                </ListboxOptions>
+                                                            </div>
+                                                        </Listbox>
+                                                        <button onClick={() => openStatusModal()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
+                                                            <FaPlus size={18} fill="#C03A03" />
+                                                        </button>
+                                                    </div>
+                                                </div>}
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-sm font-semibold required" htmlFor="followupMessage">Follow Up Message</label>
+                                                <input
+                                                    id="followupMessage"
+                                                    type="text"
+                                                    value={followupMessage}
+                                                    placeholder="Enter Follow Up Message"
+                                                    onChange={(e) => setFollowupMessage(e.target.value)}
+                                                    className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                                />
+                                            </div>
+                                        </div>
 
-                       <div className="flex flex-col gap-2 mt-4 mb-2">
-                       <button
-                           onClick={() => handleAddFollowUp()}
-                           className="bg-accent hover:bg-accent/70 w-50 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-                       >
-                           Add Follow Up
-                       </button>
-                       </div>
-                       </>
-                        }
-                        
-                        
-                         <div className=" mt-2">
-                        {selectedContact.followups && selectedContact.followups.length > 0 ? (
-                                selectedContact.followups.slice().reverse().map((followup, index) => (
-                                    <div key={index} className="border-b-2 flex flex-col gap-2 py-4">
-                                        <p><strong>Updated At:</strong> {new Date(followup.updatedDate).toLocaleString()}</p>
-                                        <p><strong>Status:</strong> <span className="text-accent font-semibold">{followup.followStatus}</span></p>
-                                        <p><strong>Message:</strong> {followup.followupMessage}</p>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No follow-ups available.</p>
-                            )}
-                               
-                        </div> 
-                        </>}
+                                        <div className="flex flex-col gap-2 mt-4 mb-2">
+                                            <button
+                                                onClick={() => handleAddFollowUp()}
+                                                className="bg-accent hover:bg-accent/70 w-50 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
+                                            >
+                                                Add Follow Up
+                                            </button>
+                                        </div>
+                                    </>
+                                }
+
+
+                                <div className=" mt-2">
+                                    {selectedContact.followups && selectedContact.followups.length > 0 ? (
+                                        selectedContact.followups.slice().reverse().map((followup, index) => (
+                                            <div key={index} className="border-b-2 flex flex-col gap-2 py-4">
+                                                <p><strong>Updated At:</strong> {new Date(followup.updatedDate).toLocaleString()}</p>
+                                                <p><strong>Status:</strong> <span className="text-accent font-semibold">{followup.followStatus}</span></p>
+                                                <p><strong>Message:</strong> {followup.followupMessage}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No follow-ups available.</p>
+                                    )}
+
+                                </div>
+                            </>}
                         {/* <button
                             className="mt-4 bg-accent text-white px-4 py-2 rounded-lg"
                             onClick={closeModal}
@@ -1000,49 +1005,49 @@ const Home = () => {
                     </Modal>
 
                     <Modal
-                                            isOpen={isStatusModalOpen}
-                                            onRequestClose={closeStatusModal}
-                                            className="flex flex-col gap-6 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative"
-                                            overlayClassName="overlay"
-                                        >
-                                            <div className="flex justify-between items-center">
-                                                <h2 className="text-lg font-bold">{editingStatus ? "Update Status" : "Add Status"}</h2>
-                                                <button onClick={closeStatusModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
-                                                    <FaPlus className="rotate-45 text-mainBg" size={22} />
-                                                </button>
-                                            </div>
-                                            {editStatusLoading ?
-                                                    <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                                        <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
-                                                    </div>
-                                                    :
-                                            <div className="flex flex-col sm:flex-row items-center gap-3">
-                                                <div className="w-full sm:w-full flex-1">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Enter status"
-                                                        value={newStatus}
-                                                        onChange={(e) => setNewStatus(e.target.value)}
-                                                        className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
-                                                    />
-                                                </div>
-                                                <div className="w-full sm:w-fit flex gap-2">
-                                                    <button
-                                                        onClick={addOrUpdateStatus}
-                                                        className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                                                    >
-                                                        {editingStatus ? "Update Status" : "Add Status"}
-                                                    </button>
-                                                    <button
-                                                        onClick={closeStatusModal}
-                                                        className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </div>
-                                            </div> }
-                                            
-                                        </Modal>
+                        isOpen={isStatusModalOpen}
+                        onRequestClose={closeStatusModal}
+                        className="flex flex-col gap-6 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative"
+                        overlayClassName="overlay"
+                    >
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-lg font-bold">{editingStatus ? "Update Status" : "Add Status"}</h2>
+                            <button onClick={closeStatusModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
+                                <FaPlus className="rotate-45 text-mainBg" size={22} />
+                            </button>
+                        </div>
+                        {editStatusLoading ?
+                            <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                                <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                            </div>
+                            :
+                            <div className="flex flex-col sm:flex-row items-center gap-3">
+                                <div className="w-full sm:w-full flex-1">
+                                    <input
+                                        type="text"
+                                        placeholder="Enter status"
+                                        value={newStatus}
+                                        onChange={(e) => setNewStatus(e.target.value)}
+                                        className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                    />
+                                </div>
+                                <div className="w-full sm:w-fit flex gap-2">
+                                    <button
+                                        onClick={addOrUpdateStatus}
+                                        className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+                                    >
+                                        {editingStatus ? "Update Status" : "Add Status"}
+                                    </button>
+                                    <button
+                                        onClick={closeStatusModal}
+                                        className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>}
+
+                    </Modal>
 
 
                 </div>
