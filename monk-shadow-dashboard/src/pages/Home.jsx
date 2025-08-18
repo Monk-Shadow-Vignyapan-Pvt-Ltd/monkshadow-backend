@@ -615,34 +615,38 @@ const Home = () => {
     return (
         <>
             {isLoading || isStatusLoading ? (
-                <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
+                <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6]'>
                     <i className="loader" />
                 </div>) : <>
 
-                <div className="mx-auto w-full flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg rounded-lg card-shadow p-5 gap-6">
+                <div className="mx-auto w-full flex-1 flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] p-5 gap-6">
                     <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <h3 className="text-xl font-bold text-accent">All Contacts</h3>
-                        <div className="flex items-center border-2 px-3 py-2 rounded-lg">
-                            <label htmlFor="search-FAQ"><SearchIcon width={18} height={18} fill={"none"} /></label>
-                            <input id='search-FAQ' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by Name or Email etc." />
+                        <h3 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">All Contacts</h3>
+                        <div className="w-full sm:w-fit flex items-center gap-3">
+                            <div className="flex-1 sm:max-w-fit flex items-center border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg">
+                                <label htmlFor="search-FAQ"><SearchIcon width={18} height={18} fill={"none"} /></label>
+                                <input id='search-FAQ' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by Name or Email etc." />
+                            </div>
+                            <button
+                                onClick={() => openModal()}
+                                // className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
+                                className="bg-accent hover:bg-accent/70 w-8 h-8 flex aspect-square items-center justify-center text-sm font-semibold text-cardBg rounded-lg"
+                            >
+                                {/* Add Contact */}
+                                <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 48 48"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="m24.06 10l-.036 28M10 24h28"></path></svg>
+                            </button>
                         </div>
-                        <button
-                            onClick={() => openModal()}
-                            className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-                        >
-                            Add Contact
-                        </button>
                     </div>
 
-                    <div className="flex border-b border-gray-200">
+                    <div className="w-full flex border-b border-gray-200 dark:border-[#2b2b2b]">
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent  border-[#f05f23]' : 'text-gray-500 border-transparent'}`}
+                            className={`w-full px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'}`}
                             onClick={() => setActiveTab('pending')}
                         >
                             Contact Pending ({filteredContactsList.filter(c => !c.isContactClose).length})
                         </button>
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent  border-[#f05f23]' : 'text-gray-500 border-transparent'} `}
+                            className={`w-full px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'} `}
                             onClick={() => setActiveTab('closed')}
                         >
                             Contact Closed ({filteredContactsList.filter(c => c.isContactClose).length})
@@ -656,7 +660,7 @@ const Home = () => {
                                     activeTab === 'pending' ? !contact.isContactClose : contact.isContactClose
                                 )
                                 .map((contact) => (
-                                    <div key={contact._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
+                                    <div key={contact._id} className="border-2 dark:border-[#2b2b2b] h-fit rounded-lg relative flex flex-col gap-3 p-3">
                                         <div className="flex items-center gap-1">
                                             <span className="font-semibold text-sm">Name</span>
                                             <span className="text-sm">{contact.name}</span>
@@ -686,7 +690,7 @@ const Home = () => {
                                             <input
                                                 type="checkbox"
                                                 checked={contact.isContactClose}
-                                                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                className="w-3.5 h-3.5 text-blue-600 bg-gray-100 border-gray-300 dark:bg-black dark:hover:bg-[#101010] rounded focus:ring-blue-500"
                                                 onChange={() => handleContactCloseToggle(contact)}
                                             />
                                             <span className="font-semibold text-sm">Contact Close</span>
@@ -697,7 +701,7 @@ const Home = () => {
                                             <input
                                                 type="checkbox"
                                                 checked={contact.showForAll}
-                                                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                className="w-3.5 h-3.5 text-blue-600 bg-gray-100 border-gray-300 dark:bg-black dark:hover:bg-[#101010] rounded focus:ring-blue-500"
                                                 onChange={() => handleShowForAllToggle(contact)}
                                             />
                                             <span className="font-semibold text-sm">Show For All</span>
@@ -706,7 +710,7 @@ const Home = () => {
 
                                         <div className="flex flex-col gap-1">
                                             <button
-                                                className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
+                                                className="bg-accent hover:bg-accent/70 dark:bg-black dark:hover:bg-[#101010] duration-300 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
                                                 onClick={() => handleShowFollowups(contact)}
                                             >
                                                 Follow-Up
@@ -715,11 +719,11 @@ const Home = () => {
                                         <div className="flex absolute top-2.5 right-2 gap-2">
 
                                             <button onClick={() => openModal(contact)}>
-                                                <EditIcon width={16} height={16} fill={"#444050"} />
+                                                <EditIcon width={16} height={16} fill={"currentColor"} />
                                             </button>
 
-                                            <button onClick={() => handleDeleteClick(contact._id)}>
-                                                <MdOutlineDelete size={23} fill='#ff0000' />
+                                            <button className="text-[#ff0000] dark:text-[#c41d1f]" onClick={() => handleDeleteClick(contact._id)}>
+                                                <MdOutlineDelete size={23} fill='currentColor' />
                                             </button>
                                         </div>
                                     </div>
@@ -727,30 +731,33 @@ const Home = () => {
                             }
                         </div>
                     }
-                    <div className="flex justify-center mt-2">
-                        <button
-                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                            Previous
-                        </button>
-                        <button
-                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                            Next
-                        </button>
-                    </div>
+
+                    {totalPages > 1 && (
+                        <div className="flex justify-center mt-2">
+                            <button
+                                className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            >
+                                Previous
+                            </button>
+                            <button
+                                className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                disabled={currentPage === totalPages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
                     <Modal
                         isOpen={isAddEditModalOpen}
                         onRequestClose={closeAddEditModal}
                         contentLabel="Contact Modal"
-                        className="w-full max-w-[500px] max-h-[96vh] overflow-auto bg-cardBg z-50 m-4 p-6 rounded-2xl flex flex-col gap-4"
+                        className="w-full max-w-[500px] max-h-[96vh] overflow-auto bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] z-50 m-4 p-6 rounded-2xl flex flex-col gap-4"
                         overlayClassName="overlay"
                     >
-                        <h2 className="text-xl font-bold text-accent">
+                        <h2 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">
                             {editingContact ? 'Edit Contact' : 'Add Contact'}
                         </h2>
                         <div className="flex flex-col gap-1">
@@ -763,7 +770,7 @@ const Home = () => {
                                 value={name}
                                 placeholder="Enter Name"
                                 onChange={(e) => setName(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                             />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -776,7 +783,7 @@ const Home = () => {
                                 value={email}
                                 placeholder="Enter Email"
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                             />
                         </div>
 
@@ -790,7 +797,7 @@ const Home = () => {
                                 value={phone}
                                 placeholder="Enter Phone No:"
                                 onChange={(e) => setPhone(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                             />
                         </div>
 
@@ -804,7 +811,7 @@ const Home = () => {
                                 onChange={(e) => setMessage(e.target.value)}
                                 placeholder="Enter Message"
                                 style={{ minHeight: "100px" }}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                             />
                         </div>
 
@@ -821,7 +828,7 @@ const Home = () => {
                                     onChange={(e) => {
                                         setPageName(e.target.value);
                                     }}
-                                    className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                    className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:ring-1 focus:outline-accent focus:ring-accent"
                                     required
                                 >
                                     <option disabled value="">Select Lead</option>
@@ -844,7 +851,7 @@ const Home = () => {
                                 value={companyName}
                                 placeholder="Enter Company Name"
                                 onChange={(e) => setCompanyName(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                             />
                         </div>}
 
@@ -858,7 +865,7 @@ const Home = () => {
                                 value={websiteUrl}
                                 placeholder="Enter Website Url"
                                 onChange={(e) => setWebsiteUrl(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                             />
                         </div>}
 
@@ -866,14 +873,14 @@ const Home = () => {
                         <div className="grid grid-cols-2 gap-3 m-x-4 w-full">
                             <button
                                 onClick={handleSubmit}
-                                className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${editingContact
-                                    ? 'bg-blue-600 hover:bg-blue-700'
-                                    : 'bg-green-600 hover:bg-green-700'
+                                className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium duration-300 ${editingContact
+                                    ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-950'
+                                    : 'bg-green-600 hover:bg-green-700 dark:bg-[#005239]'
                                     }`}
                             >
                                 {editingContact ? 'Update Contact' : 'Add Contact'}
                             </button>
-                            <button onClick={closeAddEditModal} className="px-6 py-2 rounded-lg font-medium text-md text-cardBg bg-dangerRed duration-300">
+                            <button onClick={closeAddEditModal} className="px-6 py-2 rounded-lg font-medium text-md text-cardBg bg-dangerRed hover:bg-dangerRed/75 dark:bg-[#4d1a19] duration-300">
                                 Cancel
                             </button>
                         </div>
@@ -893,7 +900,7 @@ const Home = () => {
                             </button>
                         </div>
                         {isFollowUpLoading ?
-                            <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
+                            <div className='w-full h-100 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] card-shadow rounded-lg'>
                                 <i className="loader" />
                             </div>
                             :
@@ -913,7 +920,7 @@ const Home = () => {
                                                             <div className="relative ">
                                                                 <ListboxButton
                                                                     id="category"
-                                                                    className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                                                    className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:ring-1 focus:outline-accent focus:ring-accent"
                                                                     aria-expanded="true"
                                                                 >
                                                                     <span className="flex items-center">
@@ -921,7 +928,7 @@ const Home = () => {
                                                                     </span>
                                                                 </ListboxButton>
 
-                                                                <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                                <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white dark:bg-[#000] py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 
                                                                     {customStatuses?.map((status) => (
                                                                         <ListboxOption
@@ -1006,7 +1013,7 @@ const Home = () => {
                     <Modal
                         isOpen={isStatusModalOpen}
                         onRequestClose={closeStatusModal}
-                        className="flex flex-col gap-6 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative"
+                        className="flex flex-col gap-6 bg-white dark:bg-[#141414] dark:text-[#e6e6e6] p-6 rounded-lg shadow-lg max-w-lg w-full relative"
                         overlayClassName="overlay"
                     >
                         <div className="flex justify-between items-center">
@@ -1027,19 +1034,19 @@ const Home = () => {
                                         placeholder="Enter status"
                                         value={newStatus}
                                         onChange={(e) => setNewStatus(e.target.value)}
-                                        className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                        className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:ring-1 focus:outline-accent focus:ring-accent"
                                     />
                                 </div>
                                 <div className="w-full sm:w-fit flex gap-2">
                                     <button
                                         onClick={addOrUpdateStatus}
-                                        className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+                                        className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 dark:bg-[#000] duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
                                     >
                                         {editingStatus ? "Update Status" : "Add Status"}
                                     </button>
                                     <button
                                         onClick={closeStatusModal}
-                                        className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
+                                        className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 dark:bg-[#000] duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
                                     >
                                         Cancel
                                     </button>

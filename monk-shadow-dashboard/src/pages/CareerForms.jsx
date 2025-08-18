@@ -398,26 +398,26 @@ const CareerForms = () => {
     return (
         <>
             {isLoading || isStatusLoading ? (
-                <div className='w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg'>
+                <div className='w-full h-100 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] flex-1'>
                     <i className="loader" />
                 </div>) : <>
-                <div className="mx-auto w-full flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg rounded-lg card-shadow p-5 gap-6">
+                <div className="mx-auto w-full flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] flex-1 p-5 gap-6">
                     <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <h3 className="text-xl font-bold text-accent">All Career Forms</h3>
-                        <div className="flex items-center border-2 px-3 py-2 rounded-lg">
+                        <h3 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">All Career Forms</h3>
+                        <div className="flex items-center border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg">
                             <label htmlFor="search-careers"><SearchIcon width={18} height={18} fill={"none"} /></label>
                             <input id='search-careers' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by Name or Email etc." />
                         </div>
                     </div>
-                    <div className="flex border-b border-gray-200">
+                    <div className="flex border-b border-gray-200 dark:border-[#2b2b2b]">
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'pending' ? 'text-accent border-[#f05f23]' : 'text-gray-500 border-transparent'}`}
+                            className={`w-full px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'pending' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'}`}
                             onClick={() => setActiveTab('pending')}
                         >
                             Career Pending ({filteredCareersList.filter(c => !c.isCareerClose).length})
                         </button>
                         <button
-                            className={`px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'closed' ? 'text-accent border-[#f05f23]' : 'text-gray-500 border-transparent'}`}
+                            className={`w-full px-4 py-2 font-medium text-sm border-b-2 ${activeTab === 'closed' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'}`}
                             onClick={() => setActiveTab('closed')}
                         >
                             Career Closed ({filteredCareersList.filter(c => c.isCareerClose).length})
@@ -429,7 +429,7 @@ const CareerForms = () => {
                                 activeTab === 'pending' ? !career.isCareerClose : career.isCareerClose
                             )
                                 .map((career) => (
-                                    <div key={career._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
+                                    <div key={career._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3 dark:border-[#2b2b2b]">
                                         <div className="flex items-center gap-1">
                                             <span className="font-semibold text-sm">Name</span>
                                             <span className="text-sm">{career.name}</span>
@@ -477,7 +477,7 @@ const CareerForms = () => {
 
                                         <div className="flex flex-col gap-1">
                                             <button
-                                                className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
+                                                className="bg-accent hover:bg-accent/70 dark:bg-black dark:hover:bg-[#101010] px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
                                                 onClick={() => handleShowFollowups(career)}
                                             >
                                                 Follow-Up
@@ -488,23 +488,25 @@ const CareerForms = () => {
                                 ))}
 
                         </div>}
-                    <div className="flex justify-center mt-2">
-                        <button
-                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                            disabled={currentPage === 1}
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                            Previous
-                        </button>
-                        <button
-                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                            disabled={currentPage === totalPages}
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                            Next
-                        </button>
-                    </div>
 
+                    {totalPages > 1 && (
+                        <div className="flex justify-center mt-2">
+                            <button
+                                className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            >
+                                Previous
+                            </button>
+                            <button
+                                className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                disabled={currentPage === totalPages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
 
                     <Modal
                         isOpen={isModalOpen}

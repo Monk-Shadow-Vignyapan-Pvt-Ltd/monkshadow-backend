@@ -179,7 +179,7 @@ const Header = (props) => {
     // }, []);
 
     return (
-        <div className="top-0 border-b-2 to-mainBg/0 z-40">
+        <div className="top-0 border-b-2 dark:border-[#2b2b2b] dark:bg-[#141414] to-mainBg/0 z-40">
             <header className="w-full bg-try app-header px-3 py-2">
                 <nav className="main-header flex items-center justify-between lg:justify-end" aria-label="Global">
                     <Link to="/" className="header-logo lg:hidden">
@@ -207,7 +207,7 @@ const Header = (props) => {
                     <div className="flex items-center gap-3">
                         {tokenAvailable ?
                             <>
-                                {role === "India" ? <div className="flex space-x-2 mr-2  rounded-lg bg-mainBg select-none">
+                                {role === "India" ? <div className="flex space-x-2 mr-2  rounded-lg bg-mainBg dark:bg-black select-none">
                                     <label className="radio flex-1 flex flex-grow items-center justify-center rounded-lg cursor-pointer">
                                         <input
                                             type="radio"
@@ -217,7 +217,7 @@ const Header = (props) => {
                                             checked={country === "india"}
                                             onChange={() => { setCountry("india"); setSelectedCountry("india"); }}
                                         />
-                                        <span className="text-sm flex-1 text-center peer-checked:bg-gradient-to-r peer-checked:bg-accent peer-checked:text-white peer-checked:font-semibold p-2 rounded-lg transition duration-150 ease-in-out">
+                                        <span className="text-sm flex-1 text-center peer-checked:bg-gradient-to-r peer-checked:bg-accent dark:peer-checked:bg-[#333] peer-checked:text-white peer-checked:font-semibold p-2 rounded-lg transition duration-150 ease-in-out">
                                             India
                                         </span>
                                     </label>
@@ -230,7 +230,7 @@ const Header = (props) => {
                                             checked={country === "canada"}
                                             onChange={() => { setCountry("canada"); setSelectedCountry("canada"); }}
                                         />
-                                        <span className="text-sm flex-1 text-center peer-checked:bg-gradient-to-r peer-checked:bg-accent peer-checked:text-white peer-checked:font-semibold p-2 rounded-lg transition duration-150 ease-in-out">
+                                        <span className="text-sm flex-1 text-center peer-checked:bg-gradient-to-r peer-checked:bg-accent dark:peer-checked:bg-[#333] peer-checked:text-white peer-checked:font-semibold p-2 rounded-lg transition duration-150 ease-in-out">
                                             Canada
                                         </span>
                                     </label>

@@ -196,35 +196,38 @@ const Package = () => {
   return (
     <>
       {isLoading ? (
-        <div className="w-full h-100 flex justify-center items-center bg-cardBg card-shadow rounded-lg">
+        <div className="w-full h-100 flex justify-center items-center bg-cardBg flex-1">
           <i className="loader" />
         </div>
       ) : (
         <>
-          <div className="mx-auto w-full flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg rounded-lg card-shadow p-5 gap-6">
+          <div className="mx-auto w-full flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg flex-1 p-5 gap-6">
             <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <h3 className="text-xl font-bold text-accent">All Contacts</h3>
-              <div className="flex items-center border-2 px-3 py-2 rounded-lg">
-                <label htmlFor="search-FAQ">
-                  <SearchIcon width={18} height={18} fill={"none"} />
-                </label>
-                <input
-                  id="search-FAQ"
-                  // value={searchQuery}
-                  onChange={(e) => {
-                    fetchSearchData(e.target.value);
-                  }}
-                  className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0"
-                  type="text"
-                  placeholder="Search by Name or Email etc."
-                />
+              <div className="flex items-center gap-3">
+                <div className="flex-1 sm:max-w-fit flex items-center border-2 px-3 py-2 rounded-lg">
+                  <label htmlFor="search-FAQ">
+                    <SearchIcon width={18} height={18} fill={"none"} />
+                  </label>
+                  <input
+                    id="search-FAQ"
+                    // value={searchQuery}
+                    onChange={(e) => {
+                      fetchSearchData(e.target.value);
+                    }}
+                    className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0"
+                    type="text"
+                    placeholder="Search by Name or Email etc."
+                  />
+                </div>
+                <button
+                  onClick={() => openModal()}
+                  className="bg-accent hover:bg-accent/70 w-8 h-8 flex aspect-square justify-center items-center text-sm font-semibold text-cardBg rounded-lg"
+                >
+                  {/* Add Contact */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 48 48"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="m24.06 10l-.036 28M10 24h28"></path></svg>
+                </button>
               </div>
-              <button
-                onClick={() => openModal()}
-                className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-              >
-                Add Contact
-              </button>
             </div>
 
             {isSearchLoading && (
@@ -291,22 +294,24 @@ const Package = () => {
                 ))}
               </div>
             )}
-            <div className="flex justify-center mt-2">
-              <button
-                className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-              >
-                Previous
-              </button>
-              <button
-                className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
-                Next
-              </button>
-            </div>
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-2">
+                <button
+                  className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                >
+                  Previous
+                </button>
+                <button
+                  className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            )}
             <Modal
               isOpen={isAddEditModalOpen}
               onRequestClose={closeAddEditModal}
@@ -446,11 +451,10 @@ const Package = () => {
               <div className="grid grid-cols-2 gap-3 m-x-4 w-full">
                 <button
                   onClick={handleSubmit}
-                  className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${
-                    editingPackage
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-green-600 hover:bg-green-700"
-                  }`}
+                  className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium  ${editingPackage
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                    }`}
                 >
                   {editingPackage ? "Update Contact" : "Add Contact"}
                 </button>

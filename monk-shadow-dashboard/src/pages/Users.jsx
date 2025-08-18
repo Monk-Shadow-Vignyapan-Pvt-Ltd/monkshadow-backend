@@ -390,7 +390,7 @@ const Users = () => {
         <>
 
             {isLoading ?
-                <div className='w-full flex-1 flex justify-center items-center bg-cardBg'>
+                <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-black'>
                     <i className="loader" />
                 </div>
                 :
@@ -398,11 +398,11 @@ const Users = () => {
                     <div className="flex-1 h-full w-full flex overflow-hidden">
                         {isTableDataOpen && (
 
-                            <div className={`mx-auto w-full h-full flex flex-col ${isFormOpen ? "flex-1" : "flex-1"} bg-cardBg p-5 gap-6 overflow-y-auto`}>
+                            <div className={`mx-auto w-full h-full flex flex-col ${isFormOpen ? "flex-1" : "flex-1"} bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] p-5 gap-6 overflow-y-auto`}>
                                 <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
-                                    <h1 className="text-xl font-bold text-accent">Users</h1>
+                                    <h1 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">Users</h1>
                                     <div className="w-full sm:w-fit flex items-center gap-3">
-                                        <div className="flex-1 flex items-center border-2 px-3 py-2 rounded-lg">
+                                        <div className="flex-1 flex items-center border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg">
                                             <label htmlFor="search-category"><SearchIcon width={18} height={18} fill={"none"} /></label>
                                             <input id='search-category' value={searchQuery} onChange={(e) => { fetchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by email or username" />
                                         </div>
@@ -428,7 +428,7 @@ const Users = () => {
                                             /> */}
 
                                             {filteredUsersList.map((users) => (
-                                                <div key={users._id} className="border-2 h-fit rounded-lg relative flex flex-col gap-3 p-3">
+                                                <div key={users._id} className="border-2 dark:border-[#2b2b2b] h-fit rounded-lg relative flex flex-col gap-3 p-3">
                                                     <div className="flex flex-col gap-1">
                                                         <span className="font-semibold text-sm">Id</span>
                                                         <span className="text-sm">{users._id.slice(-4)}</span>
@@ -445,7 +445,7 @@ const Users = () => {
                                                     <div className="flex absolute top-2.5 right-2 gap-2">
 
                                                         <button onClick={() => openModal(users)}>
-                                                            <EditIcon width={16} height={16} fill={"#444050"} />
+                                                            <EditIcon width={16} height={16} fill={"currentColor"} />
                                                         </button>
 
                                                         <button onClick={() => handleDelete(users._id)}>
@@ -458,33 +458,35 @@ const Users = () => {
                                         </div>}
                                 </>
 
-                                <div className="flex justify-center mt-2">
-                                    <button
-                                        className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                        disabled={currentPage === 1}
-                                        onClick={() => handlePageChange(currentPage - 1)}
-                                    >
-                                        Previous
-                                    </button>
-                                    <button
-                                        className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                    >
-                                        Next
-                                    </button>
-                                </div>
+                                {totalPages > 1 && (
+                                    <div className="flex justify-center mt-2">
+                                        <button
+                                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                            disabled={currentPage === 1}
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                        >
+                                            Previous
+                                        </button>
+                                        <button
+                                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
                         {isFormOpen && (
-                            <form className="bg-cardBg border-l-2 p-4 lg:max-w-100 flex flex-col gap-4 overflow-y-auto flex-1">
+                            <form className="bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] border-l-2 dark:border-[#2b2b2b] p-4 lg:max-w-100 flex flex-col gap-4 overflow-y-auto flex-1">
                                 <div className="w-full flex items-center justify-between gap-3">
-                                    <h2 className="text-xl font-bold text-accent">
+                                    <h2 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">
                                         {editingUser ? 'Edit User' : 'Add User'}
                                     </h2>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <button onClick={closeModal} className="icon-xl flex items-center justify-center rounded-lg bg-dangerRed hover:bg-dangerRed/75 duration-300">
+                                        <button onClick={closeModal} className="icon-xl flex items-center justify-center rounded-lg bg-dangerRed hover:bg-dangerRed/75 dark:bg-[#4d1a19] duration-300">
                                             <FaPlus className="rotate-45" size={18} fill={"#ffffff"} />
                                         </button>
                                         <button
@@ -493,12 +495,12 @@ const Users = () => {
                                             className={`icon-xl flex items-center justify-center rounded-lg duration-300 ${uploading
                                                 ? 'bg-gray-400 cursor-not-allowed'
                                                 : editingUser
-                                                    ? 'bg-green-600 hover:bg-green-700'
-                                                    : 'bg-green-600 hover:bg-green-700'
+                                                    ? 'bg-green-600 hover:bg-green-700 dark:bg-[#005239]'
+                                                    : 'bg-green-600 hover:bg-green-700 dark:bg-[#005239]'
                                                 }`}
                                         >
                                             {/* {uploading ? 'Uploading...' : editingUser ? 'Update User' : 'Add User'} */}
-                                            <FaCheck size={18} fill={"#ffffff"} />
+                                            <FaCheck size={14} fill={"#ffffff"} />
                                         </button>
                                     </div>
                                 </div>
@@ -514,7 +516,7 @@ const Users = () => {
                                             value={username}
                                             placeholder="Enter User Name"
                                             onChange={(e) => setUsername(e.target.value)}
-                                            className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                                         />
                                     </div>
 
@@ -528,7 +530,7 @@ const Users = () => {
                                             value={email}
                                             placeholder="Enter Email"
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                                         />
                                     </div>
 
@@ -536,13 +538,13 @@ const Users = () => {
                                         <label htmlFor="password" className="block text-sm font-semibold required">
                                             Password
                                         </label>
-                                        <div className="flex items-center bg-mainBg rounded-lg px-3 py-2 focus-within:outline focus-within:outline-accent -outline-offset-2">
+                                        <div className="flex items-center bg-mainBg dark:bg-[#000] rounded-lg px-3 py-2 focus-within:outline focus-within:outline-accent -outline-offset-2">
                                             <input
                                                 id="password"
                                                 value={password}
                                                 required
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                className="font-input-style flex-1 text-sm min-w-0 bg-mainBg placeholder:text-secondaryText focus:outline-none"
+                                                className="font-input-style flex-1 text-sm min-w-0 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:outline-none"
                                                 type={showPassword ? 'text' : 'password'}
                                                 placeholder="Enter your Password"
                                             />
@@ -561,7 +563,7 @@ const Users = () => {
                                                 onChange={(e) => {
                                                     setCountry(e.target.value);
                                                 }}
-                                                className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText focus:ring-1 focus:outline-accent focus:ring-accent"
+                                                className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:ring-1 focus:outline-accent focus:ring-accent"
                                                 required
                                             >
                                                 <option disabled value="">Select Country</option>
@@ -582,7 +584,7 @@ const Users = () => {
                                             User Image
                                         </label>
                                         <div
-                                            className={`upload-box w-full border-2 border-dashed rounded-lg flex justify-center items-center bg-mainBg ${dragging ? 'dragging' : ''}`}
+                                            className={`upload-box w-full border-2 border-dashed rounded-lg flex justify-center items-center bg-mainBg dark:bg-[#000] dark:border-[#2b2b2b] ${dragging ? 'dragging' : ''}`}
                                             onDragEnter={handleDragEnter}
                                             onDragLeave={handleDragLeave}
                                             onDragOver={(e) => e.preventDefault()}

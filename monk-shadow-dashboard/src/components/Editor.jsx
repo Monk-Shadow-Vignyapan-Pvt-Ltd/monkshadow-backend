@@ -37,6 +37,7 @@ const Editor = ({ content, setContent }) => {
         onChange={setContent}
         modules={modules}
         formats={formats}
+        className='dark:bg-black dark:text-white dark:border-[#2b2b2b]'
         placeholder="Write something amazing..."
         style={{ height: '100%' }}
       />
