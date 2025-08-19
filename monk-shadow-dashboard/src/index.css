@@ -541,3 +541,10 @@ input[type="number"] {
 }
 
 /* Appointment css End */
+
+.dark {
+  .ejfNUe{
+    background-color: #1a1a1a;
+    color: #e6e6e6;
+  }
+}

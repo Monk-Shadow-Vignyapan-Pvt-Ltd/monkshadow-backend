@@ -33,7 +33,7 @@ const Sidebar = (props) => {
         return (
             <li className="mb-2 last:mb-0">
                 <Link
-                    className={`menu-section duration-100 ease-linear 
+                    className={`menu-section duration-200 ease-linear 
                         px-3 py-2 flex items-center relative justify-between ${isActive ? 'bg-[#0d0d0d] hover:bg-black/75 text-mainBg dark:bg-[#212121] font-semibold' : 'hover:bg-[#c8c8c8] dark:hover:bg-[#212121]'
                         } rounded-lg duration-300 group`}
                     to={to}
@@ -44,7 +44,7 @@ const Sidebar = (props) => {
                                 } h-3 w-2 absolute left-[-4px] rounded-lg`}
                         ></div>
                         {/* {icon} */}
-                        <div className={`icon-lg flex items-center justify-center ${isActive ? 'bg-cardBg group-hover:bg-[#0d0d0d] dark:bg-[#000] dark:group-hover:bg-[#212121] text-white' : 'bg-cardBg group-hover:bg-[#000] dark:bg-[#212121] dark:group-hover:bg-[#000]'}  rounded-lg`}>
+                        <div className={`icon-lg flex items-center justify-center duration-300 ${isActive ? 'bg-cardBg group-hover:bg-mainBg dark:bg-[#000] dark:group-hover:bg-[#212121] text-[#212121] dark:text-cardBg' : 'bg-cardBg group-hover:bg-mainBg dark:bg-[#212121] dark:group-hover:bg-[#000]'}  rounded-lg`}>
                             {/* <UserIcon width={16} height={16} fill={"none"} /> */}
                             {icon}
                         </div>
@@ -59,7 +59,7 @@ const Sidebar = (props) => {
 
     return (
         <>
-            <aside className={`app-sidebar hidden lg:flex flex-col border-r-2 dark:border-[#2b2b2b] h-full px-3 pt-2 overflow-hidden bg-[#e0e0e0e6] dark:bg-[#101010] dark:text-[#e6e6e6] text-primaryText ${isSidebarCollapsed ? "w-fit" : "w-[260px]"}`} id="sidebar">
+            <aside className={`app-sidebar hidden lg:flex flex-col border-r-2 dark:border-[#2b2b2b] h-full px-3 pt-2 duration-200 overflow-hidden bg-[#e0e0e0e6] dark:bg-[#101010] dark:text-[#e6e6e6] text-primaryText ${isSidebarCollapsed ? "w-fit" : "w-[260px]"}`} id="sidebar">
                 {/* Start::main-sidebar-header */}
                 <div className={`px-3 py-2 flex justify-between items-center mb-4`}>
 
@@ -206,10 +206,9 @@ const Sidebar = (props) => {
 
                         <ul className="main-menu flex flex-col">
                             <div className="mb-2">
+                                <MenuComponent to={'/'} name={"Contacts"} icon={<UserIcon width={16} height={16} fill={"none"} />} isActive={false} />
+
                                 {role === "India" ? <MenuComponent to={'/users'} name={"Users"} icon={<UserIcon width={16} height={16} fill={"none"} />} isActive={false} /> : null}
-
-
-                                <MenuComponent to={'/contacts'} name={"Contacts"} icon={<UserIcon width={16} height={16} fill={"none"} />} isActive={false} />
 
                                 <MenuComponent to={'/career'} name={"Career Master"} icon={<UserIcon width={16} height={16} fill={"none"} />} isActive={false} />
 
@@ -218,8 +217,6 @@ const Sidebar = (props) => {
                                 <MenuComponent to={'/service'} name={"Service Master"} icon={<UserIcon width={16} height={16} fill={"none"} />} isActive={false} />
 
                                 <MenuComponent to={'/package'} name={"Package Master"} icon={<UserIcon width={16} height={16} fill={"none"} />} isActive={false} />
-
-
 
                             </div>
 

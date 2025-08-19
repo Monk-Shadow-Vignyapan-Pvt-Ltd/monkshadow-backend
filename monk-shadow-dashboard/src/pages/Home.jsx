@@ -9,7 +9,7 @@ import { useRoles } from '../RolesContext';
 import AccessDenied from '../components/AccessDenied.jsx';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { IoIosInformationCircleOutline } from "react-icons/io";
-import { FaPlus } from 'react-icons/fa6';
+import { FaCheck, FaPlus } from 'react-icons/fa6';
 import { EditIcon } from '../components/Icons/EditIcon.jsx';
 import { MdOutlineDelete } from 'react-icons/md';
 import {
@@ -21,6 +21,7 @@ import {
 } from "@headlessui/react";
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { NoDataIcon } from '../components/Icons/NoDataIcon.jsx';
 
 Modal.setAppElement('#root');
 
@@ -34,7 +35,7 @@ const Home = () => {
     const { selectCountry } = useRoles();
     const { role } = useRoles();
     const [editingContact, setEditingContact] = useState(null);
-    const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+    const [isAddEditFormOpen, setIsAddEditFormOpen] = useState(false); // Changed from isAddEditModalOpen
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -44,7 +45,7 @@ const Home = () => {
     const [websiteUrl, setWebsiteUrl] = useState("");
     const [pages, setPages] = useState(["contactus", "home", "seo", "performancemarketing", "webdevelopment"])
     const [selectedContact, setSelectedContact] = useState({});
-    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [isStatusFormOpen, setIsStatusFormOpen] = useState(false); // Changed from isStatusModalOpen
     const [editingStatus, setEditingStatus] = useState(null);
     const [newStatus, setNewStatus] = useState("");
     const [followStatus, setFollowStatus] = useState("Pending");
@@ -59,6 +60,9 @@ const Home = () => {
     const [originalTotalPages, setOriginalTotalPages] = useState(0);
     const [isSearchLoading, setIsSearchLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'closed'
+
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isTableDataOpen, setIsTableDataOpen] = useState(true);
 
 
     const fetchData = async (page) => {
@@ -142,14 +146,48 @@ const Home = () => {
         // const sortedFollowups = [...followups].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
         // setSelectedContactFollowups(sortedFollowups);
         setSelectedContact(contact);
-        setIsModalOpen(true);
+        // setIsModalOpen(true);
+        setIsFormOpen(true);
+        setIsAddEditFormOpen(false); // Close other forms
+        setIsStatusFormOpen(false); // Close other forms
+
+        // Check screen width and toggle states accordingly
+        if (window.innerWidth < 1024) {
+            setIsTableDataOpen(false); // Hide table for smaller screens
+        }
     };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const anyFormOpen = isFormOpen || isAddEditFormOpen || isStatusFormOpen;
+            if (window.innerWidth >= 1024) {
+                // Always show the table on larger screens
+                setIsTableDataOpen(true);
+            } else {
+                // On smaller screens, ensure only the active view (table/form) is visible
+                if (anyFormOpen) {
+                    setIsTableDataOpen(false);
+                } else {
+                    setIsTableDataOpen(true);
+                }
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isFormOpen, isAddEditFormOpen, isStatusFormOpen]); // Dependency ensures this runs when any form state changes
+
+    const closeFollowUpForm = () => {
+        // setIsModalOpen(false);
+        setIsFormOpen(false);
+
+        if (window.innerWidth < 1024) {
+            setIsTableDataOpen(true); // Show table for smaller screens
+        }
     };
 
-    const openModal = (contact = null) => {
+    const openAddEditForm = (contact = null) => {
         setEditingContact(contact);
         setName(contact ? contact.name : "");
         setEmail(contact ? contact.email : "");
@@ -158,14 +196,23 @@ const Home = () => {
         setPageName(contact ? contact.pageName : "");
         setCompanyName(contact ? contact.companyName : "");
         setWebsiteUrl(contact ? contact.websiteUrl : "");
-        setIsAddEditModalOpen(true);
+        setIsAddEditFormOpen(true);
+        setIsFormOpen(false); // Close other forms
+        setIsStatusFormOpen(false); // Close other forms
+
+        if (window.innerWidth < 1024) {
+            setIsTableDataOpen(false);
+        }
     };
 
 
 
-    const closeAddEditModal = () => {
-        setIsAddEditModalOpen(false);
+    const closeAddEditForm = () => {
+        setIsAddEditFormOpen(false);
         setEditingContact(null);
+        if (window.innerWidth < 1024) {
+            setIsTableDataOpen(true);
+        }
     };
 
     const handleSubmit = async () => {
@@ -210,15 +257,13 @@ const Home = () => {
                     : 'Contact added successfully!'
             );
 
-            fetchData();
+            fetchData(currentPage); // Refetch data for the current page
             setIsLoading(false);
-            closeAddEditModal();
+            closeAddEditForm();
         } catch (error) {
             console.error('Error uploading contact:', error);
             toast.error('Failed to upload contact.');
-        } finally {
-
-
+            setIsLoading(false);
         }
     };
 
@@ -229,11 +274,12 @@ const Home = () => {
                 setIsLoading(true);
                 await axios.delete(`${API_BASE_URL}/${selectCountry}/contacts/deleteContact/${id}`);
                 toast.success('contact deleted successfully!');
-                fetchData()
+                fetchData(currentPage); // Refetch data for the current page
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error deleting contact:', error);
                 toast.error('Failed to delete contact.');
+                setIsLoading(false);
             }
         }
     };
@@ -391,7 +437,7 @@ const Home = () => {
             cell: row => (
                 <div className="flex gap-4">
                     <button
-                        onClick={() => openModal(row)}
+                        onClick={() => openAddEditForm(row)}
                     >
                         <EditIcon width={20} height={20} fill={"#444050"} />
                     </button>
@@ -423,7 +469,7 @@ const Home = () => {
     ];
 
     const handleContactCloseToggle = async (contact) => {
-        setIsLoading(false);
+        setIsLoading(true); // set loading true
         const data = {
             name: contact.name,
             phone: contact.phone,
@@ -442,16 +488,18 @@ const Home = () => {
                 { headers: { 'Content-Type': 'application/json' } }
             );
             if (response.status === 200) {
-                fetchData();
+                fetchData(currentPage);
             }
         } catch (error) {
             console.error('Error updating contact:', error);
             toast.error('Failed to update contact.');
+        } finally {
+            setIsLoading(false); // set loading false
         }
     };
 
     const handleShowForAllToggle = async (contact) => {
-        setIsLoading(false);
+        setIsLoading(true); // set loading true
         const data = {
             name: contact.name,
             phone: contact.phone,
@@ -470,11 +518,13 @@ const Home = () => {
                 { headers: { 'Content-Type': 'application/json' } }
             );
             if (response.status === 200) {
-                fetchData();
+                fetchData(currentPage);
             }
         } catch (error) {
             console.error('Error updating contact:', error);
             toast.error('Failed to update contact.');
+        } finally {
+            setIsLoading(false); // set loading false
         }
     };
 
@@ -519,9 +569,10 @@ const Home = () => {
             toast.success("Status Edited successfully.");
             setFollowStatus(response.data.status.name);
             fetchStatuses();
-            closeStatusModal();
+            closeStatusForm();
         } else {
-            if (customStatuses.includes(newStatus)) {
+            if (customStatuses.some(status => status.name.toLowerCase() === newStatus.toLowerCase())) {
+                setEditStatusLoading(false);
                 toast.error("Status already exists.");
                 return;
             }
@@ -529,7 +580,7 @@ const Home = () => {
             toast.success("Status added successfully.");
             setFollowStatus(response.data.status.name);
             fetchStatuses();
-            closeStatusModal();
+            closeStatusForm();
 
         }
         // setCustomStatuses(updatedStatuses);
@@ -542,9 +593,9 @@ const Home = () => {
                 setEditStatusLoading(true);
                 await axios.delete(`${API_BASE_URL}/statuses/deleteStatus/${id}`);
                 toast.success('status deleted successfully!');
-                setFollowStatus("");
+                setFollowStatus("Pending");
                 fetchStatuses();
-                closeStatusModal();
+                closeStatusForm();
             } catch (error) {
                 console.error('Error deleting status:', error);
                 toast.error('Failed to delete status.');
@@ -552,16 +603,25 @@ const Home = () => {
         }
     };
 
-    const openStatusModal = (status = null) => {
+    const openStatusForm = (status = null) => {
         setEditingStatus(status);
         setNewStatus(status ? status.name : "");
-        setIsStatusModalOpen(true);
+        setIsStatusFormOpen(true);
+        setIsFormOpen(false); // Close other forms
+        setIsAddEditFormOpen(false); // Close other forms
+        if (window.innerWidth < 1024) {
+            setIsTableDataOpen(false);
+        }
     }
 
-    const closeStatusModal = () => {
-        setIsStatusModalOpen(false);
+    const closeStatusForm = () => {
+        setIsStatusFormOpen(false);
+        setIsFormOpen(true); // Close other forms
         setEditingStatus(null);
         setNewStatus("");
+        if (window.innerWidth < 1024) {
+            setIsTableDataOpen(true);
+        }
     }
 
     const handleAddFollowUp = async () => {
@@ -597,7 +657,7 @@ const Home = () => {
 
             toast.success('Follwup added successfully!');
 
-            fetchData();
+            fetchData(currentPage);
             setSelectedContact(response.data.contact);
             setFollowStatus("Pending");
             setFollowupMessage("");
@@ -606,458 +666,459 @@ const Home = () => {
         } catch (error) {
             console.error('Error uploading Follwup:', error);
             toast.error('Failed to upload Follwup.');
-        } finally {
-
-
+            setIsFollowUpLoading(false);
         }
     }
 
     return (
         <>
             {isLoading || isStatusLoading ? (
-                <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6]'>
+                <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] duration-200'>
                     <i className="loader" />
-                </div>) : <>
-
-                <div className="mx-auto w-full flex-1 flex flex-col col-span-12 md:col-span-8 justify-between bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] p-5 gap-6">
-                    <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <h3 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">All Contacts</h3>
-                        <div className="w-full sm:w-fit flex items-center gap-3">
-                            <div className="flex-1 sm:max-w-fit flex items-center border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg">
-                                <label htmlFor="search-FAQ"><SearchIcon width={18} height={18} fill={"none"} /></label>
-                                <input id='search-FAQ' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by Name or Email etc." />
-                            </div>
-                            <button
-                                onClick={() => openModal()}
-                                // className="bg-accent hover:bg-accent/70 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-                                className="bg-accent hover:bg-accent/70 w-8 h-8 flex aspect-square items-center justify-center text-sm font-semibold text-cardBg rounded-lg"
-                            >
-                                {/* Add Contact */}
-                                <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 48 48"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="m24.06 10l-.036 28M10 24h28"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="w-full flex border-b border-gray-200 dark:border-[#2b2b2b]">
-                        <button
-                            className={`w-full px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'}`}
-                            onClick={() => setActiveTab('pending')}
-                        >
-                            Contact Pending ({filteredContactsList.filter(c => !c.isContactClose).length})
-                        </button>
-                        <button
-                            className={`w-full px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'} `}
-                            onClick={() => setActiveTab('closed')}
-                        >
-                            Contact Closed ({filteredContactsList.filter(c => c.isContactClose).length})
-                        </button>
-                    </div>
-
-                    {isSearchLoading &&
-                        <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-4 overflow-y-auto`}>
-                            {filteredContactsList
-                                .filter(contact =>
-                                    activeTab === 'pending' ? !contact.isContactClose : contact.isContactClose
-                                )
-                                .map((contact) => (
-                                    <div key={contact._id} className="border-2 dark:border-[#2b2b2b] h-fit rounded-lg relative flex flex-col gap-3 p-3">
-                                        <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-sm">Name</span>
-                                            <span className="text-sm">{contact.name}</span>
+                </div>) :
+                <>
+                    <div className="flex-1 h-full w-full flex overflow-hidden">
+                        {isTableDataOpen && (
+                            <div className={`mx-auto w-full h-full flex flex-col duration-200 ${isFormOpen || isAddEditFormOpen || isStatusFormOpen ? "flex-1" : "flex-1"} bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] p-5 gap-6 overflow-y-auto`}>
+                                <div className={`w-full ${(isFormOpen || isAddEditFormOpen || isStatusFormOpen) && "lg:flex-col lg:items-start xl:flex-row xl:items-center"} flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                                    <h3 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">All Contacts</h3>
+                                    <div className={`flex items-center gap-3 w-full sm:w-auto ${(isFormOpen || isAddEditFormOpen || isStatusFormOpen) && "lg:w-full xl:w-auto"}`}>
+                                        <div className={`flex-1 sm:max-w-fit ${(isFormOpen || isAddEditFormOpen || isStatusFormOpen) && "lg:flex-1 lg:max-w-none"} flex items-center dark:bg-[#1a1a1a] focus-visible:border-[#f05f23] dark:focus-within:border-[#7b3517] border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg`}>
+                                            <label htmlFor="search-FAQ"><SearchIcon width={18} height={18} fill={"none"} /></label>
+                                            <input id='search-FAQ' value={searchQuery} onChange={(e) => { fetchSearchData(e.target.value) }} className={`ms-2 w-full ${(isFormOpen || isAddEditFormOpen || isStatusFormOpen) ? "sm:w-full xl:w-60" : "sm:w-60"} bg-transparent text-sm p-0 focus:outline-0`} type="text" placeholder="Search by Name or Email etc." />
                                         </div>
-                                        <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-sm">Email</span>
-                                            <span className="text-sm">{contact.email}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-sm">Phone No:</span>
-                                            <span className="text-sm">{contact.phone}</span>
-                                        </div>
-                                        <div className="flex flex-col gap-1">
-                                            <span className="font-semibold text-sm">Message</span>
-                                            <span className="text-sm">{contact.message}</span>
-                                        </div>
-                                        {selectCountry === "canada" && <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-sm">Inquiry About</span>
-                                            <span className="text-sm">{contact.pageName}</span>
-                                        </div>}
-                                        {selectCountry === "canada" && <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-sm">Company Name</span>
-                                            <span className="text-sm">{contact.companyName ? contact.companyName : contact.websiteUrl}</span>
-                                        </div>}
-
-                                        <div className="flex items-center gap-1">
-                                            <input
-                                                type="checkbox"
-                                                checked={contact.isContactClose}
-                                                className="w-3.5 h-3.5 text-blue-600 bg-gray-100 border-gray-300 dark:bg-black dark:hover:bg-[#101010] rounded focus:ring-blue-500"
-                                                onChange={() => handleContactCloseToggle(contact)}
-                                            />
-                                            <span className="font-semibold text-sm">Contact Close</span>
-
-                                        </div>
-
-                                        {selectCountry === "canada" && role === "India" && <div className="flex items-center gap-1">
-                                            <input
-                                                type="checkbox"
-                                                checked={contact.showForAll}
-                                                className="w-3.5 h-3.5 text-blue-600 bg-gray-100 border-gray-300 dark:bg-black dark:hover:bg-[#101010] rounded focus:ring-blue-500"
-                                                onChange={() => handleShowForAllToggle(contact)}
-                                            />
-                                            <span className="font-semibold text-sm">Show For All</span>
-
-                                        </div>}
-
-                                        <div className="flex flex-col gap-1">
-                                            <button
-                                                className="bg-accent hover:bg-accent/70 dark:bg-black dark:hover:bg-[#101010] duration-300 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
-                                                onClick={() => handleShowFollowups(contact)}
-                                            >
-                                                Follow-Up
-                                            </button>
-                                        </div>
-                                        <div className="flex absolute top-2.5 right-2 gap-2">
-
-                                            <button onClick={() => openModal(contact)}>
-                                                <EditIcon width={16} height={16} fill={"currentColor"} />
-                                            </button>
-
-                                            <button className="text-[#ff0000] dark:text-[#c41d1f]" onClick={() => handleDeleteClick(contact._id)}>
-                                                <MdOutlineDelete size={23} fill='currentColor' />
-                                            </button>
-                                        </div>
+                                        <button
+                                            onClick={() => openAddEditForm()}
+                                            className="bg-accent hover:bg-accent/70 w-8 h-8 flex aspect-square items-center justify-center text-sm font-semibold text-cardBg rounded-lg"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} viewBox="0 0 48 48"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="m24.06 10l-.036 28M10 24h28"></path></svg>
+                                        </button>
                                     </div>
-                                ))
-                            }
-                        </div>
-                    }
+                                </div>
 
-                    {totalPages > 1 && (
-                        <div className="flex justify-center mt-2">
-                            <button
-                                className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                disabled={currentPage === 1}
-                                onClick={() => handlePageChange(currentPage - 1)}
-                            >
-                                Previous
-                            </button>
-                            <button
-                                className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                disabled={currentPage === totalPages}
-                                onClick={() => handlePageChange(currentPage + 1)}
-                            >
-                                Next
-                            </button>
-                        </div>
-                    )}
-                    <Modal
-                        isOpen={isAddEditModalOpen}
-                        onRequestClose={closeAddEditModal}
-                        contentLabel="Contact Modal"
-                        className="w-full max-w-[500px] max-h-[96vh] overflow-auto bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] z-50 m-4 p-6 rounded-2xl flex flex-col gap-4"
-                        overlayClassName="overlay"
-                    >
-                        <h2 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">
-                            {editingContact ? 'Edit Contact' : 'Add Contact'}
-                        </h2>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="name" className="block text-sm font-semibold required">
-                                Name
-                            </label>
-                            <input
-                                id="name"
-                                type="text"
-                                value={name}
-                                placeholder="Enter Name"
-                                onChange={(e) => setName(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="email" className="block text-sm font-semibold required">
-                                Email
-                            </label>
-                            <input
-                                id="email"
-                                type="text"
-                                value={email}
-                                placeholder="Enter Email"
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                            />
-                        </div>
+                                <div className="w-full flex border-b border-gray-200 dark:border-[#2b2b2b]">
+                                    <button
+                                        className={`w-full px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'pending' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'}`}
+                                        onClick={() => setActiveTab('pending')}
+                                    >
+                                        Contact Pending ({filteredContactsList.filter(c => !c.isContactClose).length})
+                                    </button>
+                                    <button
+                                        className={`w-full px-4 py-2 font-medium text-sm border-b-2  ${activeTab === 'closed' ? 'text-accent dark:text-[#e6e6e6] border-[#f05f23]' : 'text-gray-500 border-transparent dark:border-[#2b2b2b]'} `}
+                                        onClick={() => setActiveTab('closed')}
+                                    >
+                                        Contact Closed ({filteredContactsList.filter(c => c.isContactClose).length})
+                                    </button>
+                                </div>
 
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="phone" className="block text-sm font-semibold required">
-                                Phone No:
-                            </label>
-                            <input
-                                id="phone"
-                                type="text"
-                                value={phone}
-                                placeholder="Enter Phone No:"
-                                onChange={(e) => setPhone(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                            />
-                        </div>
-
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="message" className="block text-sm font-semibold ">
-                                Message
-                            </label>
-                            <textarea
-                                id="message"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Enter Message"
-                                style={{ minHeight: "100px" }}
-                                className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] dark:focus:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                            />
-                        </div>
-
-
-
-                        {selectCountry === "canada" && <div className="flex flex-col gap-1">
-                            <label htmlFor="pageName" className="block text-sm font-semibold">
-                                Select Lead
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <select
-                                    name="pageName"
-                                    value={pageName}
-                                    onChange={(e) => {
-                                        setPageName(e.target.value);
-                                    }}
-                                    className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:ring-1 focus:outline-accent focus:ring-accent"
-                                    required
-                                >
-                                    <option disabled value="">Select Lead</option>
-                                    {pages.map((page, index) => (
-                                        <option key={index} value={page}>
-                                            {page}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>}
-
-                        {selectCountry === "canada" && pageName != "seo" && <div className="flex flex-col gap-1">
-                            <label htmlFor="companyName" className="block text-sm font-semibold ">
-                                Company Name
-                            </label>
-                            <input
-                                id="companyName"
-                                type="text"
-                                value={companyName}
-                                placeholder="Enter Company Name"
-                                onChange={(e) => setCompanyName(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                            />
-                        </div>}
-
-                        {selectCountry === "canada" && pageName === "seo" && <div className="flex flex-col gap-1">
-                            <label htmlFor="websiteUrl" className="block text-sm font-semibold ">
-                                Website Url
-                            </label>
-                            <input
-                                id="websiteUrl"
-                                type="text"
-                                value={websiteUrl}
-                                placeholder="Enter Website Url"
-                                onChange={(e) => setWebsiteUrl(e.target.value)}
-                                className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                            />
-                        </div>}
-
-
-                        <div className="grid grid-cols-2 gap-3 m-x-4 w-full">
-                            <button
-                                onClick={handleSubmit}
-                                className={`px-6 py-2 rounded-lg text-cardBg text-md font-medium duration-300 ${editingContact
-                                    ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-950'
-                                    : 'bg-green-600 hover:bg-green-700 dark:bg-[#005239]'
-                                    }`}
-                            >
-                                {editingContact ? 'Update Contact' : 'Add Contact'}
-                            </button>
-                            <button onClick={closeAddEditModal} className="px-6 py-2 rounded-lg font-medium text-md text-cardBg bg-dangerRed hover:bg-dangerRed/75 dark:bg-[#4d1a19] duration-300">
-                                Cancel
-                            </button>
-                        </div>
-                    </Modal>
-
-                    <Modal
-                        isOpen={isModalOpen}
-                        onRequestClose={closeModal}
-                        contentLabel="Follow-Ups Modal"
-                        className="bg-white  p-6 rounded-lg shadow-lg max-w-lg w-full relative max-h-[95vh] overflow-y-auto"
-                        overlayClassName="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50"
-                    >
-                        <div className="flex items-center justify-between w-full border-b-2 pb-4">
-                            <h3 className="text-xl font-bold text-accent">Follow-Ups</h3>
-                            <button onClick={closeModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
-                                <FaPlus className="rotate-45 text-mainBg" size={22} />
-                            </button>
-                        </div>
-                        {isFollowUpLoading ?
-                            <div className='w-full h-100 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] card-shadow rounded-lg'>
-                                <i className="loader" />
-                            </div>
-                            :
-                            <>
-                                {selectedContact.isContactClose ? <div className="flex flex-col gap-2 mt-2"> <p>This Contact Is Closed.</p></div> :
+                                {isSearchLoading &&
                                     <>
-                                        <div className="flex flex-col gap-2 mt-2">
-                                            {editStatusLoading ?
-                                                <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                                    <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                                        {
+                                            filteredContactsList.filter(contact =>
+                                                activeTab === 'pending' ? !contact.isContactClose : contact.isContactClose
+                                            ) < 1 ?
+                                                <div className="flex-1 w-full flex flex-col gap-5 items-center justify-center">
+                                                    <NoDataIcon className={'w-6/12 lg:w-3/12'} />
+                                                    <h3 className="font-bold text-lg xl:text-xl text-[#e6e6e6]">No Data Found</h3>
                                                 </div>
                                                 :
-                                                <div className="flex flex-col gap-2">
-                                                    <label className="text-sm font-semibold" htmlFor="followStatus">Status</label>
-                                                    <div className="flex items-center gap-2 relative w-full overflow-visible">
-                                                        <Listbox className="w-full" value={followStatus} onChange={setFollowStatus}>
-                                                            <div className="relative ">
-                                                                <ListboxButton
-                                                                    id="category"
-                                                                    className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:ring-1 focus:outline-accent focus:ring-accent"
-                                                                    aria-expanded="true"
-                                                                >
-                                                                    <span className="flex items-center">
-                                                                        {followStatus}
-                                                                    </span>
-                                                                </ListboxButton>
+                                                <div className={`w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${(isFormOpen || isAddEditFormOpen || isStatusFormOpen) ? "lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3" : "lg:grid-cols-3 2xl:grid-cols-4"} gap-4 overflow-y-auto`}>
+                                                    {filteredContactsList
+                                                        .filter(contact =>
+                                                            activeTab === 'pending' ? !contact.isContactClose : contact.isContactClose
+                                                        )
+                                                        .map((contact) => (
+                                                            <div key={contact._id} className="h-fit rounded-lg relative flex flex-col gap-3 p-3 dark:bg-[#1a1a1a] border-2 dark:border-[#2b2b2b]">
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-sm">Name</span>
+                                                                    <span className="text-sm">{contact.name}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-sm">Email</span>
+                                                                    <span className="text-sm">{contact.email}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-sm">Phone No:</span>
+                                                                    <span className="text-sm">{contact.phone}</span>
+                                                                </div>
+                                                                <div className="flex flex-col gap-1">
+                                                                    <span className="font-semibold text-sm">Message</span>
+                                                                    <span className="text-sm">{contact.message}</span>
+                                                                </div>
+                                                                {selectCountry === "canada" && <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-sm">Inquiry About</span>
+                                                                    <span className="text-sm">{contact.pageName}</span>
+                                                                </div>}
+                                                                {selectCountry === "canada" && <div className="flex items-center gap-1">
+                                                                    <span className="font-semibold text-sm">Company Name</span>
+                                                                    <span className="text-sm">{contact.companyName ? contact.companyName : contact.websiteUrl}</span>
+                                                                </div>}
 
-                                                                <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white dark:bg-[#000] py-2 px-2 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                                <div className="flex items-center gap-1">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={contact.isContactClose}
+                                                                        className="w-3.5 h-3.5 text-blue-600 bg-gray-100 border-gray-300 dark:bg-black dark:hover:bg-[#101010] rounded focus:ring-blue-500"
+                                                                        onChange={() => handleContactCloseToggle(contact)}
+                                                                    />
+                                                                    <span className="font-semibold text-sm">Contact Close</span>
 
-                                                                    {customStatuses?.map((status) => (
-                                                                        <ListboxOption
-                                                                            key={status._id}
-                                                                            value={status.name}
-                                                                            className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 data-[focus]:bg-lightRed data-[focus]:text-white"
-                                                                        >
+                                                                </div>
 
-                                                                            <div className="flex items-center justify-between">
-                                                                                {status.name}
-                                                                                {(status.name === "Pending" || status.name === "Cancelled") ? null :
-                                                                                    <div className="flex items-center gap-1">
-                                                                                        <button onClick={() => openStatusModal(status)}>
-                                                                                            <EditIcon width={15} height={15} fill={"#000"} />
-                                                                                        </button>
-                                                                                        <button onClick={() => deleteStatus(status._id)}>
-                                                                                            <MdOutlineDelete size={17} fill="#000" />
-                                                                                        </button>
-                                                                                    </div>}
-                                                                            </div>
-                                                                        </ListboxOption>
-                                                                    ))}
-                                                                </ListboxOptions>
+                                                                {selectCountry === "canada" && role === "India" && <div className="flex items-center gap-1">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={contact.showForAll}
+                                                                        className="w-3.5 h-3.5 text-blue-600 bg-gray-100 border-gray-300 dark:bg-black dark:hover:bg-[#101010] rounded focus:ring-blue-500"
+                                                                        onChange={() => handleShowForAllToggle(contact)}
+                                                                    />
+                                                                    <span className="font-semibold text-sm">Show For All</span>
+
+                                                                </div>}
+
+                                                                <div className="flex flex-col gap-1">
+                                                                    <button
+                                                                        className="bg-accent hover:bg-accent/70 dark:bg-black dark:hover:bg-[#101010] duration-300 px-3 py-2 h-full text-sm text-nowrap font-semibold text-cardBg rounded-lg"
+                                                                        onClick={() => handleShowFollowups(contact)}
+                                                                    >
+                                                                        Follow-Up
+                                                                    </button>
+                                                                </div>
+                                                                <div className="flex absolute top-2.5 right-2 gap-2">
+
+                                                                    <button onClick={() => openAddEditForm(contact)}>
+                                                                        <EditIcon width={16} height={16} fill={"currentColor"} />
+                                                                    </button>
+
+                                                                    <button className="text-[#ff0000] dark:text-[#c41d1f]" onClick={() => handleDeleteClick(contact._id)}>
+                                                                        <MdOutlineDelete size={23} fill='currentColor' />
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                        </Listbox>
-                                                        <button onClick={() => openStatusModal()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray">
-                                                            <FaPlus size={18} fill="#C03A03" />
-                                                        </button>
-                                                    </div>
-                                                </div>}
-                                            <div className="flex flex-col gap-2">
-                                                <label className="text-sm font-semibold required" htmlFor="followupMessage">Follow Up Message</label>
-                                                <input
-                                                    id="followupMessage"
-                                                    type="text"
-                                                    value={followupMessage}
-                                                    placeholder="Enter Follow Up Message"
-                                                    onChange={(e) => setFollowupMessage(e.target.value)}
-                                                    className="bg-mainBg placeholder:text-secondaryText focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-col gap-2 mt-4 mb-2">
-                                            <button
-                                                onClick={() => handleAddFollowUp()}
-                                                className="bg-accent hover:bg-accent/70 w-50 px-3 py-2 h-full text-sm font-semibold text-cardBg rounded-lg"
-                                            >
-                                                Add Follow Up
-                                            </button>
-                                        </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                        }
                                     </>
                                 }
 
-
-                                <div className=" mt-2">
-                                    {selectedContact.followups && selectedContact.followups.length > 0 ? (
-                                        selectedContact.followups.slice().reverse().map((followup, index) => (
-                                            <div key={index} className="border-b-2 flex flex-col gap-2 py-4">
-                                                <p><strong>Updated At:</strong> {new Date(followup.updatedDate).toLocaleString()}</p>
-                                                <p><strong>Status:</strong> <span className="text-accent font-semibold">{followup.followStatus}</span></p>
-                                                <p><strong>Message:</strong> {followup.followupMessage}</p>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No follow-ups available.</p>
-                                    )}
-
-                                </div>
-                            </>}
-                        {/* <button
-                            className="mt-4 bg-accent text-white px-4 py-2 rounded-lg"
-                            onClick={closeModal}
-                        >
-                            Close
-                        </button> */}
-                        {/* <button onClick={closeModal} className="absolute top-4 right-4 icon-lg flex items-center justify-center rounded-full bg-accent">
-                            <FaPlus className="rotate-45 text-mainBg" size={22} />
-                        </button> */}
-                    </Modal>
-
-                    <Modal
-                        isOpen={isStatusModalOpen}
-                        onRequestClose={closeStatusModal}
-                        className="flex flex-col gap-6 bg-white dark:bg-[#141414] dark:text-[#e6e6e6] p-6 rounded-lg shadow-lg max-w-lg w-full relative"
-                        overlayClassName="overlay"
-                    >
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-lg font-bold">{editingStatus ? "Update Status" : "Add Status"}</h2>
-                            <button onClick={closeStatusModal} className="icon-lg flex items-center justify-center rounded-full bg-accent">
-                                <FaPlus className="rotate-45 text-mainBg" size={22} />
-                            </button>
-                        </div>
-                        {editStatusLoading ?
-                            <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                                {totalPages > 1 && (
+                                    <div className="flex justify-center mt-2">
+                                        <button
+                                            className="font-Outfit px-4 py-1 mr-4 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                            disabled={currentPage === 1}
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                        >
+                                            Previous
+                                        </button>
+                                        <button
+                                            className="font-Outfit px-4 py-1 rounded-md text-primary bg-gradient-to-r from-gradientStart to-gradientEnd hover:to-gradientStart duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                            :
-                            <div className="flex flex-col sm:flex-row items-center gap-3">
-                                <div className="w-full sm:w-full flex-1">
+                        )}
+
+                        {isAddEditFormOpen && (
+                            <div className="bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] border-l-2 dark:border-[#2b2b2b] p-4 lg:max-w-100 flex flex-col gap-4 overflow-y-auto flex-1">
+                                <div className="flex items-center justify-between w-full">
+                                    <h2 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">
+                                        {editingContact ? 'Edit Contact' : 'Add Contact'}
+                                    </h2>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button onClick={closeAddEditForm} className="icon-xl flex items-center justify-center rounded-lg bg-dangerRed hover:bg-dangerRed/75 dark:bg-[#4d1a19] duration-300">
+                                            <FaPlus className="rotate-45" size={18} fill={"#ffffff"} />
+                                        </button>
+                                        <button
+                                            onClick={handleSubmit}
+                                            className={`icon-xl flex items-center justify-center rounded-lg duration-300 ${editingContact
+                                                ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-950'
+                                                : 'bg-green-600 hover:bg-green-700 dark:bg-[#005239]'
+                                                }`}
+                                        >
+                                            {/* {editingContact ? 'Update Contact' : 'Add Contact'} */}
+                                            <FaCheck size={14} fill={"#ffffff"} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="name" className="block text-sm font-semibold required">
+                                        Name
+                                    </label>
                                     <input
+                                        id="name"
                                         type="text"
-                                        placeholder="Enter status"
-                                        value={newStatus}
-                                        onChange={(e) => setNewStatus(e.target.value)}
-                                        className="w-full font-input-style text-md rounded-lg px-3 py-2 border border-border bg-mainBg placeholder:text-secondaryText dark:bg-[#000] focus:ring-1 focus:outline-accent focus:ring-accent"
+                                        value={name}
+                                        placeholder="Enter Name"
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                                     />
                                 </div>
-                                <div className="w-full sm:w-fit flex gap-2">
-                                    <button
-                                        onClick={addOrUpdateStatus}
-                                        className="w-full sm:w-fit border-accent border bg-accent hover:bg-accent/70 dark:bg-[#000] duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                                    >
-                                        {editingStatus ? "Update Status" : "Add Status"}
-                                    </button>
-                                    <button
-                                        onClick={closeStatusModal}
-                                        className="w-full sm:w-fit border-secondaryText border bg-secondaryText hover:bg-secondaryText/80 dark:bg-[#000] duration-300 px-4 py-2 text-sm font-semibold text-white rounded-lg"
-                                    >
-                                        Cancel
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="email" className="block text-sm font-semibold required">
+                                        Email
+                                    </label>
+                                    <input
+                                        id="email"
+                                        type="text"
+                                        value={email}
+                                        placeholder="Enter Email"
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="phone" className="block text-sm font-semibold required">
+                                        Phone No:
+                                    </label>
+                                    <input
+                                        id="phone"
+                                        type="text"
+                                        value={phone}
+                                        placeholder="Enter Phone No:"
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="message" className="block text-sm font-semibold ">
+                                        Message
+                                    </label>
+                                    <textarea
+                                        id="message"
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        placeholder="Enter Message"
+                                        style={{ minHeight: "100px" }}
+                                        className="bg-mainBg placeholder:text-secondaryText focus:outline-none dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                    />
+                                </div>
+
+                                {selectCountry === "canada" && <div className="flex flex-col gap-1">
+                                    <label htmlFor="pageName" className="block text-sm font-semibold">
+                                        Select Lead
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                        <select
+                                            name="pageName"
+                                            value={pageName}
+                                            onChange={(e) => {
+                                                setPageName(e.target.value);
+                                            }}
+                                            className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none"
+                                            required
+                                        >
+                                            <option disabled value="">Select Lead</option>
+                                            {pages.map((page, index) => (
+                                                <option key={index} value={page}>
+                                                    {page}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>}
+
+                                {selectCountry === "canada" && pageName != "seo" && <div className="flex flex-col gap-1">
+                                    <label htmlFor="companyName" className="block text-sm font-semibold ">
+                                        Company Name
+                                    </label>
+                                    <input
+                                        id="companyName"
+                                        type="text"
+                                        value={companyName}
+                                        placeholder="Enter Company Name"
+                                        onChange={(e) => setCompanyName(e.target.value)}
+                                        className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                    />
+                                </div>}
+
+                                {selectCountry === "canada" && pageName === "seo" && <div className="flex flex-col gap-1">
+                                    <label htmlFor="websiteUrl" className="block text-sm font-semibold ">
+                                        Website Url
+                                    </label>
+                                    <input
+                                        id="websiteUrl"
+                                        type="text"
+                                        value={websiteUrl}
+                                        placeholder="Enter Website Url"
+                                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                                        className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                    />
+                                </div>}
+
+                            </div>
+                        )}
+
+                        {isStatusFormOpen && (
+                            <div className="bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] border-l-2 dark:border-[#2b2b2b] p-4 lg:max-w-100 flex flex-col gap-4 overflow-y-auto flex-1">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-lg font-bold">{editingStatus ? "Update Status" : "Add Status"}</h2>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button onClick={closeStatusForm} className="icon-xl flex items-center justify-center rounded-lg bg-dangerRed hover:bg-dangerRed/75 dark:bg-[#4d1a19] duration-300">
+                                            <FaPlus className="rotate-45" size={18} fill={"#ffffff"} />
+                                        </button>
+                                        <button
+                                            onClick={addOrUpdateStatus}
+                                            className={`icon-xl flex items-center justify-center rounded-lg duration-300 ${editingStatus
+                                                ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-950'
+                                                : 'bg-green-600 hover:bg-green-700 dark:bg-[#005239]'
+                                                }`}
+                                        >
+                                            {/* {editingStatus ? "Update Status" : "Add Status"} */}
+                                            <FaCheck size={14} fill={"#ffffff"} />
+                                        </button>
+                                    </div>
+                                </div>
+                                {editStatusLoading ?
+                                    <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                                        <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                                    </div>
+                                    :
+                                    <div className="flex flex-col gap-3">
+                                        <div className="w-full flex-1">
+                                            <input
+                                                type="text"
+                                                placeholder="Enter status"
+                                                value={newStatus}
+                                                onChange={(e) => setNewStatus(e.target.value)}
+                                                className="w-full font-input-style text-md rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none"
+                                            />
+                                        </div>
+                                    </div>}
+
+                            </div>
+                        )}
+
+                        {isFormOpen && (
+                            <div className="bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] border-l-2 dark:border-[#2b2b2b] p-4 lg:max-w-100 flex flex-col gap-4 overflow-y-auto flex-1">
+                                <div className="flex items-center justify-between w-full">
+                                    <h3 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">Follow-Ups</h3>
+                                    <button onClick={closeFollowUpForm} className="icon-xl flex items-center justify-center rounded-lg bg-dangerRed hover:bg-dangerRed/75 dark:bg-[#4d1a19] duration-300">
+                                        <FaPlus className="rotate-45" size={18} fill={"#ffffff"} />
                                     </button>
                                 </div>
-                            </div>}
+                                {isFollowUpLoading ?
+                                    <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] card-shadow rounded-lg'>
+                                        <i className="loader" />
+                                    </div>
+                                    :
+                                    <>
+                                        {selectedContact.isContactClose ? <div className="flex flex-col gap-2 mt-2"> <p>This Contact Is Closed.</p></div> :
+                                            <>
+                                                <div className="flex flex-col gap-2 mt-2">
+                                                    {editStatusLoading ?
+                                                        <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                                                            <Skeleton className="w-full min-h-8 object-cover rounded-lg" />
+                                                        </div>
+                                                        :
+                                                        <div className="flex flex-col gap-2">
+                                                            <label className="text-sm font-semibold" htmlFor="followStatus">Status</label>
+                                                            <div className="flex items-center gap-2 relative w-full overflow-visible">
+                                                                <Listbox className="w-full" value={followStatus} onChange={setFollowStatus}>
+                                                                    <div className="relative ">
+                                                                        <ListboxButton
+                                                                            id="followStatus"
+                                                                            className="relative w-full h-8 cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none"
+                                                                            aria-expanded="true"
+                                                                        >
+                                                                            <span className="flex items-center">
+                                                                                {followStatus}
+                                                                            </span>
+                                                                        </ListboxButton>
 
-                    </Modal>
+                                                                        <ListboxOptions className="absolute z-50 left-0 mt-1 w-full max-h-56 overflow-auto rounded-lg bg-white dark:bg-[#000] py-2 px-2 text-base shadow-lg ring-1 ring-black dark:border-2 dark:border-[#2b2b2b] ring-opacity-5 focus:outline-none">
+
+                                                                            {customStatuses?.map((status) => (
+                                                                                <ListboxOption
+                                                                                    key={status._id}
+                                                                                    value={status.name}
+                                                                                    className="group relative cursor-default select-none text-sm rounded-md py-2 px-2 text-gray-900 dark:text-[#e6e6e6] data-[focus]:bg-lightRed data-[focus]:text-white"
+                                                                                >
+
+                                                                                    <div className="flex items-center justify-between">
+                                                                                        {status.name}
+                                                                                        {(status.name === "Pending" || status.name === "Cancelled") ? null :
+                                                                                            <div className="flex items-center gap-1">
+                                                                                                <button onClick={() => openStatusForm(status)}>
+                                                                                                    <EditIcon width={15} height={15} fill={"currentColor"} />
+                                                                                                </button>
+                                                                                                <button onClick={() => deleteStatus(status._id)}>
+                                                                                                    <MdOutlineDelete size={17} fill="currentColor" />
+                                                                                                </button>
+                                                                                            </div>}
+                                                                                    </div>
+                                                                                </ListboxOption>
+                                                                            ))}
+                                                                        </ListboxOptions>
+                                                                    </div>
+                                                                </Listbox>
+                                                                <button onClick={() => openStatusForm()} className="flex items-center justify-center p-2 rounded-lg bg-mainBg hover:bg-lightGray dark:bg-accent dark:hover:bg-accent/70 duration-300">
+                                                                    <FaPlus size={18} fill="currentColor" />
+                                                                </button>
+                                                            </div>
+                                                        </div>}
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="text-sm font-semibold required" htmlFor="followupMessage">Follow Up Message</label>
+                                                        <input
+                                                            id="followupMessage"
+                                                            type="text"
+                                                            value={followupMessage}
+                                                            placeholder="Enter Follow Up Message"
+                                                            onChange={(e) => setFollowupMessage(e.target.value)}
+                                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => handleAddFollowUp()}
+                                                    className="w-full text-cardBg bg-accent hover:bg-accent/70 dark:text-[#e6e6e6] border-l-2 dark:border-[#2b2b2b] px-3 py-2.5 text-sm font-semibold rounded-lg duration-300"
+                                                >
+                                                    Add Follow Up
+                                                </button>
+                                            </>
+                                        }
 
 
-                </div>
-            </>}
+                                        <div className="mt-4">
+                                            <h3 className="font-bold text-md mb-2">Previous Follow-Ups</h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-2">
+                                                {selectedContact.followups && selectedContact.followups.length > 0 ? (
+                                                    selectedContact.followups.slice().reverse().map((followup, index) => (
+                                                        <div key={index} className="border-2 rounded-lg dark:border-[#2b2b2b] dark:bg-[#1a1a1a] flex flex-col gap-1 px-3 py-4 text-sm">
+                                                            <p className="flex flex-wrap justify-between sm:text-nowrap"><span className="font-semibold">Updated At :</span> {new Date(followup.updatedDate).toLocaleString()}</p>
+                                                            <p className="flex flex-wrap justify-between sm:text-nowrap"><span className="font-semibold">Status :</span> <span className="text-[#f05f23]">{followup.followStatus}</span></p>
+                                                            <p className="flex flex-wrap justify-between sm:text-nowrap"><span className="font-semibold">Message :</span> {followup.followupMessage}</p>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="flex flex-col items-center gap-2 px-3 py-4 text-sm font-semibold border-2 border-[#c5c5c5] dark:border-[#2b2b2b] dark:border-[#2b2b2b] rounded-lg border-dashed">
+                                                        <p>No follow-ups available.</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>}
+                                {/* <button
+                                    className="mt-4 bg-accent text-white px-4 py-2 rounded-lg"
+                                    onClick={closeModal}
+                                >
+                                    Close
+                                </button> */}
+                                {/* <button onClick={closeModal} className="absolute top-4 right-4 icon-lg flex items-center justify-center rounded-full bg-accent">
+                                    <FaPlus className="rotate-45 text-mainBg" size={22} />
+                                </button> */}
+                            </div>
+                        )}
+                    </div>
+                </>
+            }
 
             <ToastContainer />
         </>

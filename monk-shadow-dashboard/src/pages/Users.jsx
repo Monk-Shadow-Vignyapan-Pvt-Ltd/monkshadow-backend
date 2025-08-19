@@ -17,6 +17,7 @@ import { FaCheck } from 'react-icons/fa';
 import AddCenter from "../Modals/AddCenter.jsx";
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { NoDataIcon } from '../components/Icons/NoDataIcon.jsx';
 
 const Users = () => {
     const [email, setEmail] = useState('');
@@ -390,21 +391,20 @@ const Users = () => {
         <>
 
             {isLoading ?
-                <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-black'>
+                <div className='w-full flex-1 flex justify-center items-center bg-cardBg dark:bg-black duration-200'>
                     <i className="loader" />
                 </div>
                 :
                 <>
                     <div className="flex-1 h-full w-full flex overflow-hidden">
                         {isTableDataOpen && (
-
-                            <div className={`mx-auto w-full h-full flex flex-col ${isFormOpen ? "flex-1" : "flex-1"} bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] p-5 gap-6 overflow-y-auto`}>
-                                <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2">
-                                    <h1 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">Users</h1>
-                                    <div className="w-full sm:w-fit flex items-center gap-3">
-                                        <div className="flex-1 flex items-center border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg">
+                            <div className={`mx-auto w-full h-full flex flex-col duration-200 ${isFormOpen ? "flex-1" : "flex-1"} bg-cardBg dark:bg-[#141414] dark:text-[#e6e6e6] p-5 gap-6 overflow-y-auto`}>
+                                <div className={`w-full ${isFormOpen && "lg:flex-col lg:items-start xl:flex-row xl:items-center"} flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                                    <h1 className="text-xl font-bold text-accent dark:text-[#e6e6e6]">All Users</h1>
+                                    <div className={`flex items-center gap-3 w-full sm:w-auto ${isFormOpen && "lg:w-full xl:w-auto"}`}>
+                                        <div className={`flex-1 sm:max-w-fit ${isFormOpen && "lg:flex-1 lg:max-w-none"} flex items-center dark:bg-[#1a1a1a] focus-visible:border-[#f05f23] dark:focus-within:border-[#7b3517] border-2 dark:border-[#2b2b2b] px-3 py-2 rounded-lg`}>
                                             <label htmlFor="search-category"><SearchIcon width={18} height={18} fill={"none"} /></label>
-                                            <input id='search-category' value={searchQuery} onChange={(e) => { fetchData(e.target.value) }} className="ms-2 w-full sm:w-60 bg-transparent text-sm p-0 focus:outline-0" type="text" placeholder="Search by email or username" />
+                                            <input id='search-category' value={searchQuery} onChange={(e) => { fetchData(e.target.value) }} className={`ms-2 w-full ${isFormOpen ? "sm:w-full xl:w-60" : "sm:w-60"} bg-transparent text-sm p-0 focus:outline-0`} type="text" placeholder="Search by email or username" />
                                         </div>
 
                                         <button onClick={() => openModal()} className="btnLinear icon-xl h-full aspect-square flex items-center justify-center rounded-lg duration-300">
@@ -416,46 +416,57 @@ const Users = () => {
 
                                 <>
                                     {isSearchLoading &&
-                                        <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${isFormOpen ? "lg:grid-cols-1 2xl:grid-cols-2" : "lg:grid-cols-3 2xl:grid-cols-4"} gap-4 overflow-y-auto`}>
-                                            {/* <DataTable
-                                                columns={columns}
-                                                data={filteredUsers}
-                                                pagination
-                                                highlightOnHover
-                                                // pointerOnHover
-                                                // striped
-                                                customStyles={customStyles}
-                                            /> */}
-
-                                            {filteredUsersList.map((users) => (
-                                                <div key={users._id} className="border-2 dark:border-[#2b2b2b] h-fit rounded-lg relative flex flex-col gap-3 p-3">
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="font-semibold text-sm">Id</span>
-                                                        <span className="text-sm">{users._id.slice(-4)}</span>
+                                        <>
+                                            {
+                                                filteredUsersList < 1 ?
+                                                    <div className="flex-1 w-full flex flex-col gap-5 items-center justify-center">
+                                                        <NoDataIcon className={'w-6/12 lg:w-3/12'} />
+                                                        <h3 className="font-bold text-lg xl:text-xl text-[#e6e6e6]">No Data Found</h3>
                                                     </div>
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="font-semibold text-sm">Users Name</span>
-                                                        <span className="text-sm">{users.username}</span>
+                                                    :
+                                                    <div className={`flex-1 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${isFormOpen ? "lg:grid-cols-1 2xl:grid-cols-2" : "lg:grid-cols-3 2xl:grid-cols-4"} gap-4 overflow-y-auto`}>
+                                                        {/* <DataTable
+                                                            columns={columns}
+                                                            data={filteredUsers}
+                                                            pagination
+                                                            highlightOnHover
+                                                            // pointerOnHover
+                                                            // striped
+                                                            customStyles={customStyles}
+                                                        /> */}
+
+                                                        {filteredUsersList.map((users) => (
+                                                            <div key={users._id} className="h-fit rounded-lg relative flex flex-col gap-3 p-3 dark:bg-[#1a1a1a] border-2 dark:border-[#2b2b2b]">
+                                                                <div className="flex flex-col gap-1">
+                                                                    <span className="font-semibold text-sm">Id</span>
+                                                                    <span className="text-sm">{users._id.slice(-4)}</span>
+                                                                </div>
+                                                                <div className="flex flex-col gap-1">
+                                                                    <span className="font-semibold text-sm">Users Name</span>
+                                                                    <span className="text-sm">{users.username}</span>
+                                                                </div>
+                                                                <div className="flex flex-col gap-1">
+                                                                    <span className="font-semibold text-sm">Users Email</span>
+                                                                    <span className="text-sm">{users.email}</span>
+                                                                </div>
+
+                                                                <div className="flex absolute top-2.5 right-2 gap-2">
+
+                                                                    <button onClick={() => openModal(users)}>
+                                                                        <EditIcon width={16} height={16} fill={"currentColor"} />
+                                                                    </button>
+
+                                                                    <button onClick={() => handleDelete(users._id)}>
+                                                                        <MdOutlineDelete size={23} fill='#ff0000' />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+
                                                     </div>
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="font-semibold text-sm">Users Email</span>
-                                                        <span className="text-sm">{users.email}</span>
-                                                    </div>
-
-                                                    <div className="flex absolute top-2.5 right-2 gap-2">
-
-                                                        <button onClick={() => openModal(users)}>
-                                                            <EditIcon width={16} height={16} fill={"currentColor"} />
-                                                        </button>
-
-                                                        <button onClick={() => handleDelete(users._id)}>
-                                                            <MdOutlineDelete size={23} fill='#ff0000' />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-
-                                        </div>}
+                                            }
+                                        </>
+                                    }
                                 </>
 
                                 {totalPages > 1 && (
@@ -516,12 +527,12 @@ const Users = () => {
                                             value={username}
                                             placeholder="Enter User Name"
                                             onChange={(e) => setUsername(e.target.value)}
-                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                                         />
                                     </div>
 
                                     <div className="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                                        <label htmlFor="question" className="block text-sm font-semibold required">
+                                        <label htmlFor="email" className="block text-sm font-semibold required">
                                             Email
                                         </label>
                                         <input
@@ -530,7 +541,7 @@ const Users = () => {
                                             value={email}
                                             placeholder="Enter Email"
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:outline-accent text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
+                                            className="bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none text-sm rounded-lg px-3 py-2 block w-full flatpickr-input"
                                         />
                                     </div>
 
@@ -538,7 +549,7 @@ const Users = () => {
                                         <label htmlFor="password" className="block text-sm font-semibold required">
                                             Password
                                         </label>
-                                        <div className="flex items-center bg-mainBg dark:bg-[#000] rounded-lg px-3 py-2 focus-within:outline focus-within:outline-accent -outline-offset-2">
+                                        <div className="flex items-center bg-mainBg dark:bg-[#000] rounded-lg px-3 py-2 border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-within:border-[#f05f23] dark:focus-within:border-[#7b3517] focus-within:outline-none -outline-offset-2">
                                             <input
                                                 id="password"
                                                 value={password}
@@ -559,11 +570,12 @@ const Users = () => {
                                         <div className="flex items-center gap-2">
                                             <select
                                                 name="pageName"
+                                                id='country'
                                                 value={country}
                                                 onChange={(e) => {
                                                     setCountry(e.target.value);
                                                 }}
-                                                className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] focus:ring-1 focus:outline-accent focus:ring-accent"
+                                                className="relative w-full cursor-default font-input-style text-sm rounded-lg px-3 py-2 bg-mainBg placeholder:text-secondaryText dark:bg-[#000] dark:text-[#e6e6e6] border-2 border-[#c5c5c5] dark:border-[#2b2b2b] focus-visible:border-[#f05f23] dark:focus-visible:border-[#7b3517] focus-visible:outline-none"
                                                 required
                                             >
                                                 <option disabled value="">Select Country</option>
@@ -611,7 +623,7 @@ const Users = () => {
                                                     <div className="flex flex-col items-center mt-2">
                                                         <span className="text-md text-secondaryText">Drag and drop</span>
                                                         <span className="text-md text-secondaryText font-semibold">or</span>
-                                                        <label className="text-md text-accent font-semibold">
+                                                        <label className="text-md text-[#f05f23] dark:focus-visible:text-[#7b3517] font-semibold">
                                                             Browse Image
                                                             <input
                                                                 type="file"

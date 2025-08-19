@@ -12,9 +12,9 @@ export const Footer = () => {
     return (
         <div className="">
             {/* ----------------------------------------- Footer Start ----------------------------------------- */}
-            <footer className={`w-full app-header border-t-2 dark:border-[#2b2b2b] dark:bg-[#141414] dark:text-[#e6e6e6] px-4 py-4`}>
+            <footer className={`w-full app-header border-t-2 dark:border-[#2b2b2b] dark:bg-[#141414] dark:text-[#e6e6e6] px-4 py-4 duration-200`}>
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <span className="text-md font-semibold">© 2024, Made by Monk Shadow</span>
+                    <span className="text-md font-semibold">© {new Date().getFullYear()} - Made by Monk Shadow</span>
                     {/* <div className="flex gap-5">
                         <Facebook className="dark:text-[#e6e6e6] dark:hover:text-white/75 duration-300 cursor-pointer" width={20} height={20} fill={"none"} />
                         <Whatsapp className="dark:text-[#e6e6e6] dark:hover:text-white/75 duration-300 cursor-pointer" width={20} height={20} fill={"none"} />
